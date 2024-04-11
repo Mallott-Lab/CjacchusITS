@@ -98,43 +98,117 @@ JaccDist<- vegdist(Subsample,method="jaccard",binary=TRUE)
 
 #Now the data are ready for analyses
 #Let's start with the PERMANOVA of the Bray-Curtis dissimilarity matrix
-BrayPERMANOVA<-adonis2(BrayDist~ MetadataReduced$Age + MetadataReduced$Sex + MetadataReduced$Season + MetadataReduced$Group + MetadataReduced$Preservative + MetadataReduced$Time2,by="margin")
+#Dropped Time from the PERMANOVA because it is nested in season and PERMANOVA doesn't quite handle that well
+BrayPERMANOVA<-adonis2(BrayDist~ MetadataReduced$Age + MetadataReduced$Sex + MetadataReduced$Season + MetadataReduced$Group + MetadataReduced$Preservative,by="margin")
 
 BrayPERMANOVA
-#Only group is significant in the PERMANOVA
+#Season, preservative, and group are significant in the PERMANOVA
 
 #Let's run NMDS
-BrayNMDS<-metaMDS(BrayDist, k = 2,autotransform=FALSE)
+BrayNMDS<-metaMDS(BrayDist, k = 2,autotransform=FALSE,try=100,trymax=100)
 
 #Let's plot it
-plot(BrayNMDS$points,pch=19, cex= 0.5, main= "Bray-Curtis NMDS")
-#groups were significant, so let's makr those with colors
-points(BrayNMDS$points[which(MetadataReduced$Group=="Algaroba"),], pch = 19, cex = 1.5, col = "#E69F00")
-points(BrayNMDS$points[which(MetadataReduced$Group=="Coqueiro"),], pch = 19, cex = 1.5, col = "#56B4E9")
-points(BrayNMDS$points[which(MetadataReduced$Group=="Cow"),], pch = 19, cex = 1.5, col = "#009E73")
-points(BrayNMDS$points[which(MetadataReduced$Group=="F group"),], pch = 19, cex = 1.5, col = "#F0E442")
-points(BrayNMDS$points[which(MetadataReduced$Group=="House"),], pch = 19, cex = 1.5, col = "#0072B2")
+par(mfrow=c(1,1),mar=c(5.1, 5.1, 4.1, 2.1))
+plot(BrayNMDS$points,pch=19, cex= 0.5,col="white", main= "Bray-Curtis NMDS")
+#groups were significant, so let's make those with colors
+points(BrayNMDS$points[which(MetadataReduced$Group=="Algaroba"),], pch = 0, cex = 1.5, col = "#E69F00")
+points(BrayNMDS$points[which(MetadataReduced$Group=="Coqueiro"),], pch = 1, cex = 1.5, col = "#56B4E9")
+points(BrayNMDS$points[which(MetadataReduced$Group=="Cow"),], pch = 2, cex = 1.5, col = "#009E73")
+points(BrayNMDS$points[which(MetadataReduced$Group=="F group"),], pch = 15, cex = 1.5, col = "#F0E442")
+points(BrayNMDS$points[which(MetadataReduced$Group=="House"),], pch = 17, cex = 1.5, col = "#0072B2")
 points(BrayNMDS$points[which(MetadataReduced$Group=="Key"),], pch = 19, cex = 1.5, col = "#D55E00")
-points(BrayNMDS$points[which(MetadataReduced$Group=="Princess"),], pch = 19, cex = 1.5, col = "#CC79A7")
-points(BrayNMDS$points[which(MetadataReduced$Group=="Road"),], pch = 19, cex = 1.5, col = "#999999")
+points(BrayNMDS$points[which(MetadataReduced$Group=="Princess"),], pch = 8, cex = 1.5, col = "#CC79A7")
+points(BrayNMDS$points[which(MetadataReduced$Group=="Road"),], pch = 4, cex = 1.5, col = "#999999")
+ordiellipse(BrayNMDS$points,MetadataReduced$Group,col=c("#E69F00","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00","#CC79A7","#999999"))
+
+plot.new()
+legend("center",c("Algaroba","Coqueiro", "Cow", "F group", "House","Key","Princess","Road"),
+       pch=c(0,1,2,15,17,19,8,4)
+       ,col=c("#E69F00","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00","#CC79A7","#999999")
+       ,xjust=0,yjust=0,title = NA,ncol = 2,pt.cex = 1.5)
+
+#Let's plot Preservative
+plot(BrayNMDS$points,pch=19, cex= 0.5, main= "Bray-Curtis NMDS")
+#groups were significant, so let's mark those with colors
+points(BrayNMDS$points[which(MetadataReduced$Preservative=="Ethanol"),], pch = 19, cex = 1.5, col = "#E69F00")
+points(BrayNMDS$points[which(MetadataReduced$Preservative=="RNAlater"),], pch = 19, cex = 1.5, col = "#56B4E9")
+ordiellipse(BrayNMDS$points,MetadataReduced$Preservative,col=c("#E69F00","#56B4E9"))
+
+
+legend("topright",c("Ethanol","RNAlater")
+       ,fill=c("#E69F00","#56B4E9")
+       ,xjust=0,yjust=0,title = "Preservative",ncol = 1,pt.cex = 1.5)
+
+#Let's plot Season, it approaches significance
+plot(BrayNMDS$points,pch=19, cex= 0.5, main= "Bray-Curtis NMDS")
+#groups were significant, so let's mark those with colors
+points(BrayNMDS$points[which(MetadataReduced$Season=="Dry"),], pch = 19, cex = 1.5, col = "#E69F00")
+points(BrayNMDS$points[which(MetadataReduced$Season=="Wet"),], pch = 19, cex = 1.5, col = "#56B4E9")
+ordiellipse(BrayNMDS$points,MetadataReduced$Season,col=c("#E69F00","#56B4E9"))
+
+legend("topright",c("Dry","Wet")
+       ,fill=c("#E69F00","#56B4E9")
+       ,xjust=0,yjust=0,title = "Season",ncol = 1,pt.cex = 1.5)
+
+#I want to look at betadisper for season
+SeasonBrayBetaDisper <- betadisper(d=BrayDist,group=MetadataReduced$Season)
+anova(SeasonBrayBetaDisper)
+TukeyHSD(SeasonBrayBetaDisper)
+#The dispersion of points is not significantly different
 
 #Let's move on to the Jaccard distance PERMANOVA
-JaccPERMANOVA<-adonis2(JaccDist~ MetadataReduced$Age + MetadataReduced$Sex + MetadataReduced$Season + MetadataReduced$Group + MetadataReduced$Preservative + MetadataReduced$Time2,by="margin")
+JaccPERMANOVA<-adonis2(JaccDist~ MetadataReduced$Age + MetadataReduced$Sex + MetadataReduced$Season + MetadataReduced$Group + MetadataReduced$Preservative,by="margin")
 
 JaccPERMANOVA
-#Only group is significant
+#Season, Group, and Preservative are significant
 
 #Let's run NMDS
-JaccNMDS<-metaMDS(JaccDist, k = 2,autotransform=FALSE)
+JaccNMDS<-metaMDS(JaccDist, k = 2,autotransform=FALSE,try=100,trymax=100)
 
 #Let's plot it
-plot(JaccNMDS$points,pch=19, cex= 0.5, main= "Jaccard NMDS")
+plot(JaccNMDS$points,pch=19, cex= 0.5,col="white", main= "Jaccard NMDS")
 #groups were significant, so let's makr those with colors
-points(JaccNMDS$points[which(MetadataReduced$Group=="Algaroba"),], pch = 19, cex = 1.5, col = "#E69F00")
-points(JaccNMDS$points[which(MetadataReduced$Group=="Coqueiro"),], pch = 19, cex = 1.5, col = "#56B4E9")
-points(JaccNMDS$points[which(MetadataReduced$Group=="Cow"),], pch = 19, cex = 1.5, col = "#009E73")
-points(JaccNMDS$points[which(MetadataReduced$Group=="F group"),], pch = 19, cex = 1.5, col = "#F0E442")
-points(JaccNMDS$points[which(MetadataReduced$Group=="House"),], pch = 19, cex = 1.5, col = "#0072B2")
+points(JaccNMDS$points[which(MetadataReduced$Group=="Algaroba"),], pch = 0, cex = 1.5, col = "#E69F00")
+points(JaccNMDS$points[which(MetadataReduced$Group=="Coqueiro"),], pch = 1, cex = 1.5, col = "#56B4E9")
+points(JaccNMDS$points[which(MetadataReduced$Group=="Cow"),], pch = 2, cex = 1.5, col = "#009E73")
+points(JaccNMDS$points[which(MetadataReduced$Group=="F group"),], pch = 15, cex = 1.5, col = "#F0E442")
+points(JaccNMDS$points[which(MetadataReduced$Group=="House"),], pch = 17, cex = 1.5, col = "#0072B2")
 points(JaccNMDS$points[which(MetadataReduced$Group=="Key"),], pch = 19, cex = 1.5, col = "#D55E00")
-points(JaccNMDS$points[which(MetadataReduced$Group=="Princess"),], pch = 19, cex = 1.5, col = "#CC79A7")
-points(JaccNMDS$points[which(MetadataReduced$Group=="Road"),], pch = 19, cex = 1.5, col = "#999999")
+points(JaccNMDS$points[which(MetadataReduced$Group=="Princess"),], pch = 8, cex = 1.5, col = "#CC79A7")
+points(JaccNMDS$points[which(MetadataReduced$Group=="Road"),], pch = 4, cex = 1.5, col = "#999999")
+ordiellipse(JaccNMDS$points,MetadataReduced$Group,col=c("#E69F00","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00","#CC79A7","#999999"))
+
+plot.new()
+legend("center",c("Algaroba","Coqueiro", "Cow", "F group", "House","Key","Princess","Road"),
+       pch=c(0,1,2,15,17,19,8,4)
+       ,col=c("#E69F00","#56B4E9","#009E73","#F0E442","#0072B2","#D55E00","#CC79A7","#999999")
+       ,xjust=0,yjust=0,title = NA,ncol = 2,pt.cex = 1.5)
+
+
+#Let's plot Season
+plot(JaccNMDS$points,pch=19, cex= 0.5, main= "Jaccard NMDS")
+#groups were significant, so let's mark those with colors
+points(JaccNMDS$points[which(MetadataReduced$Season=="Dry"),], pch = 19, cex = 1.5, col = "#E69F00")
+points(JaccNMDS$points[which(MetadataReduced$Season=="Wet"),], pch = 19, cex = 1.5, col = "#56B4E9")
+ordiellipse(JaccNMDS$points,MetadataReduced$Season,col=c("#E69F00","#56B4E9"))
+
+legend("bottomright",c("Dry","Wet")
+       ,fill=c("#E69F00","#56B4E9")
+       ,xjust=0,yjust=0,title = "Season",ncol = 1,pt.cex = 1.5)
+
+SeasonJaccBetaDisper <- betadisper(d=JaccDist,group=MetadataReduced$Season)
+anova(SeasonJaccBetaDisper)
+TukeyHSD(SeasonJaccBetaDisper)
+#The dispersion of points is not significantly different
+
+#Let's plot Preservative
+plot(JaccNMDS$points,pch=19, cex= 0.5, main= "Jaccard NMDS")
+#groups were significant, so let's mark those with colors
+points(JaccNMDS$points[which(MetadataReduced$Preservative=="Ethanol"),], pch = 19, cex = 1.5, col = "#E69F00")
+points(JaccNMDS$points[which(MetadataReduced$Preservative=="RNAlater"),], pch = 19, cex = 1.5, col = "#56B4E9")
+ordiellipse(JaccNMDS$points,MetadataReduced$Preservative,col=c("#E69F00","#56B4E9"))
+
+legend("bottomright",c("Ethanol","RNAlater")
+       ,fill=c("#E69F00","#56B4E9")
+       ,xjust=0,yjust=0,title = "Preservative",ncol = 1,pt.cex = 1.5)
+

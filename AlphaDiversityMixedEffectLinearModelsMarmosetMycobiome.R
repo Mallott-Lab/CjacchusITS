@@ -6,6 +6,8 @@ library(vegan)#For various indices and metrics
 library(fossil)#For Chao1
 library(stringr)#For strings
 library(lme4)#For mixed effect models
+library(car)#for type III ANOVA
+library(agricolae)#for the Tukey HSD
 
 #Let's bring in the objects from Qiime2
 tabletrimmedQiime2Object<-read_qza("table-trimmed.qza", rm = FALSE)
@@ -115,7 +117,7 @@ ModelData<-ModelData[-which(is.na(ModelData$Sex)==TRUE),]
 #The Time2 (season and year) is nested in season
 #Reproductive state could be nested in sex (only females can be pregnant), but this makes it hard to test for significance (can't drop sex while reproductive state is nested in it)
 #After dropping the unknown sex individuals, we only have 52 samples, 30 are male (so not-pregnant male) and 10 of the 22 females are "unknown" reproductive state
-#I cannot imagine that the information will be helpful, there are a lot of NAs and most reproductive states are poorly stampled, so I am dropping reproductive state completely
+#I cannot imagine that the information will be helpful, there are a lot of NAs and most reproductive states are poorly sampled, so I am dropping reproductive state completely
 
 #The pattern will be to create a full model, then create a null model that is missing the parameter of interest (one missing sex, the other missing season)
 #The full model will be compared to the relevant null model to test for significance of the missing parameter
@@ -129,7 +131,7 @@ ShannonModelFull <- lmer(Shannon ~
                        Season:Time2,
                      data = ModelData, REML=FALSE)
 summary(ShannonModelFull)
-
+Anova(ShannonModelFull)
 
 ShannonModelNullSeason <- lmer(Shannon ~ 
                            #Season +
@@ -167,7 +169,7 @@ RichnessModelFull <- lmer(Richness ~
                            Season:Time2,
                          data = ModelData, REML=FALSE)
 summary(RichnessModelFull)
-
+Anova(RichnessModelFull)
 
 RichnessModelNullSeason <- lmer(Richness ~ 
                                  #Season +
@@ -204,7 +206,7 @@ Chao1ModelFull <- lmer(Chao1 ~
                             Season:Time2,
                           data = ModelData, REML=FALSE)
 summary(Chao1ModelFull)
-
+Anova(Chao1ModelFull)
 
 Chao1ModelNullSeason <- lmer(Chao1 ~ 
                                   #Season +
@@ -231,81 +233,53 @@ anova(Chao1ModelNullSeason, Chao1ModelFull, test="Chisq")
 anova(Chao1ModelNullSex, Chao1ModelFull, test="Chisq")
 #Sex is significant, season is not
 
-
-SimpsonModelFull <- lmer(Simpson ~ 
+#When I attempted to run the same process as the previous three metrics the model was singular
+#The Group, when treated as a random effect, was creating the problem
+#I made group into a fixed effect, which changed the model from a mixed effects model to a standard linear model (hence the change in function)
+#This model had issues with aliasing, so I had to drop Time2 as a parameter too
+SimpsonModelFull <- lm(Simpson ~ 
                          Season +
                          Sex +
-                         (1|Group) +
+                         Group +
                          #Reproductive +
                          Preservative +
-                         Age +
-                         Season:Time2,
-                       data = ModelData, REML=FALSE)
+                         Age,
+                       data = ModelData)
 summary(SimpsonModelFull)
 
 
-SimpsonModelNullSeason <- lmer(Simpson ~ 
-                               #Season +
-                               Sex +
-                               (1|Group) +
-                               #Reproductive +
-                               Preservative +
-                               Age +
-                               Season:Time2,
-                             data = ModelData, REML=FALSE)
-summary(SimpsonModelNullSeason)
-SimpsonModelNullSex <- lmer(Simpson ~ 
-                            Season +
-                            #Sex +
-                            (1|Group) +
-                            #Reproductive +
-                            Preservative +
-                            Age +
-                            Season:Time2,
-                          data = ModelData, REML=FALSE)
-summary(SimpsonModelNullSex)
-#Now to test for significance
-anova(SimpsonModelNullSeason, SimpsonModelFull, test="Chisq")
-anova(SimpsonModelNullSex, SimpsonModelFull, test="Chisq")
-#Sex is significant, season is not
+#The overall model itself is not significant (p = 0.1159)
+#Wet season is significantly different from dry season (p = 0.03851)
+#Male is significantly different from female (p = 0.00772)
+#Subadult is significantly different from adult (p = 0.03398)
+
+#Running a type 3 ANOVA to get a better idea
+T3ANOVASimpson <- Anova(SimpsonModelFull , type = 3)
+
+TukeyHSDT3ANOVASimpson <- HSD.test(SimpsonModelFull, c("Season","Sex", "Group", "Preservative", "Age"), group = FALSE)
+
+View(TukeyHSDT3ANOVASimpson$comparison)
+#There are 595 combinations of parameters, none are significantly different from one another, closes p-value is 0.11
 
 PielouModelFull <- lm(Pielou ~ 
                            Season +
                            Sex +
-                           #(1|Group) +
+                           Group +
                            #Reproductive +
                            Preservative +
-                           Age +
-                           Season:Time2,
-                         data = ModelData, REML=FALSE)
+                           Age,
+                         data = ModelData)
 summary(PielouModelFull)
+#The overall model is not significant (p = 0.1331)
+#Male is still significantly different from female (p = 0.00998)
+#Subadult is still significantly different from Adult (p = 0.03134)
 
+T3ANOVAPielou <- Anova(PielouModelFull , type = 3)
 
-PielouModelNullSeason <- lmer(Pielou ~ 
-                                 #Season +
-                                 Sex +
-                                 #(1|Group) +
-                                 #Reproductive +
-                                 Preservative +
-                                 Age +
-                                 Season:Time2,
-                               data = ModelData, REML=FALSE)
-summary(PielouModelNullSeason)
-PielouModelNullSex <- lmer(Pielou ~ 
-                              Season +
-                              #Sex +
-                              #(1|Group) +
-                              #Reproductive +
-                              Preservative +
-                              Age +
-                              Season:Time2,
-                            data = ModelData, REML=FALSE)
-summary(PielouModelNullSex)
-#Now to test for significance
-anova(PielouModelNullSeason, PielouModelFull, test="Chisq")
-anova(PielouModelNullSex, PielouModelFull, test="Chisq")
-#Sex and season are both not significant
+TukeyHSDT3ANOVASimpson <- HSD.test(PielouModelFull, c("Season","Sex", "Group", "Preservative", "Age"), group = FALSE)
 
+View(TukeyHSDT3ANOVASimpson$comparison)
+#None of these were significant either
 
 #I want to visualize these results, probably with box plots for each alpha diversity metric
 
@@ -314,35 +288,45 @@ par(mfrow=c(2,2),mar=c(5.1, 5.1, 4.1, 2.1))
 boxplot(
   ModelData$Shannon[which(ModelData$Sex=="Male")],
   ModelData$Shannon[which(ModelData$Sex=="Female")]
-  ,xaxt="n",ylab="Mycobiome Shannon Diversity",xlab="Sex",
+  ,xaxt="n",ylab="Mycobiome Shannon Diversity",
   cex.lab =1.8, cex=3,ylim=c(0,5),lwd=2)
 axis(side = 1, at=c(1,2),labels=c("Male","Female"))
+points(x=jitter(rep(1,30)),y=ModelData$Shannon[which(ModelData$Sex=="Male")],pch=19)
+points(x=jitter(rep(2,22)),y=ModelData$Shannon[which(ModelData$Sex=="Female")],pch=19)
 
 boxplot(
   ModelData$Richness[which(ModelData$Sex=="Male")],
   ModelData$Richness[which(ModelData$Sex=="Female")]
-  ,xaxt="n",ylab="Mycobiome Richness Diversity",xlab="Sex",
+  ,xaxt="n",ylab="Mycobiome Richness Diversity",
   cex.lab =1.8, cex=3,ylim=c(0,150),lwd=2)
 axis(side = 1, at=c(1,2),labels=c("Male","Female"))
+points(x=jitter(rep(1,30)),y=ModelData$Richness[which(ModelData$Sex=="Male")],pch=19)
+points(x=jitter(rep(2,22)),y=ModelData$Richness[which(ModelData$Sex=="Female")],pch=19)
 
 boxplot(
   ModelData$Chao1[which(ModelData$Sex=="Male")],
   ModelData$Chao1[which(ModelData$Sex=="Female")]
-  ,xaxt="n",ylab="Mycobiome Chao1 Diversity",xlab="Sex",
+  ,xaxt="n",ylab="Mycobiome Chao1 Diversity",
   cex.lab =1.8, cex=3,ylim=c(0,150),lwd=2)
 axis(side = 1, at=c(1,2),labels=c("Male","Female"))
+points(x=jitter(rep(1,30)),y=ModelData$Chao1[which(ModelData$Sex=="Male")],pch=19)
+points(x=jitter(rep(2,22)),y=ModelData$Chao1[which(ModelData$Sex=="Female")],pch=19)
 
 boxplot(
   ModelData$Simpson[which(ModelData$Sex=="Male")],
   ModelData$Simpson[which(ModelData$Sex=="Female")]
-  ,xaxt="n",ylab="Mycobiome Simpson Diversity",xlab="Sex",
+  ,xaxt="n",ylab="Mycobiome Simpson Diversity",
   cex.lab =1.8, cex=3,ylim=c(0,1.1),lwd=2)
 axis(side = 1, at=c(1,2),labels=c("Male","Female"))
+points(x=jitter(rep(1,30)),y=ModelData$Simpson[which(ModelData$Sex=="Male")],pch=19)
+points(x=jitter(rep(2,22)),y=ModelData$Simpson[which(ModelData$Sex=="Female")],pch=19)
 
 par(mfrow=c(1,1),mar=c(5.1, 5.1, 4.1, 2.1))
 boxplot(
   ModelData$Pielou[which(ModelData$Sex=="Male")],
   ModelData$Pielou[which(ModelData$Sex=="Female")]
-  ,xaxt="n",ylab="Mycobiome Pielou's Evenness",xlab="Sex",
+  ,xaxt="n",ylab="Mycobiome Pielou's Evenness",
   cex.lab =1.8, cex=3,ylim=c(0,1.1),lwd=2)
 axis(side = 1, at=c(1,2),labels=c("Male","Female"))
+points(x=jitter(rep(1,30)),y=ModelData$Pielou[which(ModelData$Sex=="Male")],pch=19)
+points(x=jitter(rep(2,22)),y=ModelData$Pielou[which(ModelData$Sex=="Female")],pch=19)
