@@ -1,0 +1,68 @@
+sampleid	orignal_id	Barcode	Date	Time	Species	SpeciesShort	Family	Site	Diet	Group	Individual	Age	Sex	Habitat	Preservative	Collector	Matching sample in EtOH	Tube Type	Reproductive	Season	Month	Notes
+CJ2_CACTGCTTGA	CJAC2	CACTGCTTGA	2/3/2015		Callithrix jacchus			Brazil		House		Adult	Female		RNAlater				Unknown	Dry	February	
+CJ4_TCTAGCGTGG	CJAC4	TCTAGCGTGG	2/6/2015		Callithrix jacchus			Brazil		F group	Pink	Adult	Female		RNAlater				Unknown	Dry	February	
+CJ5_GCATAATCGC	CJAC5	GCATAATCGC	2/6/2015		Callithrix jacchus			Brazil		F group	Green Tuft	Juvenile	Male		RNAlater				NP	Dry	February	
+CJ6_GTCGTAACAC	CJAC6	GTCGTAACAC	2/6/2015		Callithrix jacchus			Brazil		F group	Blue	Adult	Male		RNAlater				NP	Dry	February	
+CJ7_GAGATTGCTA	CJAC7	GAGATTGCTA	2/7/2015		Callithrix jacchus			Brazil		Coqueiro	Blue Tufts	Juvenile	Male		RNAlater				NP	Dry	February	
+CJ8_GGACAGATGG	CJAC8	GGACAGATGG	2/7/2015		Callithrix jacchus			Brazil		Coqueiro	Red Tufts	Juvenile	Male		RNAlater				NP	Dry	February	
+CJ10_CTTACGTTGC	CJAC10	CTTACGTTGC	2/10/2015		Callithrix jacchus			Brazil		House	Lilac/lilac	Adult	Female		RNAlater				ND	Dry	February	
+CJ11_GTGTTCGGTC	CJAC11	GTGTTCGGTC	2/10/2015		Callithrix jacchus			Brazil		House	Lilac/lilac	Adult	Female		RNAlater				ND	Dry	February	
+CJ13_CTCAAGAAGC	CJAC13	CTCAAGAAGC	2/10/2015		Callithrix jacchus			Brazil		House		Adult	Male		RNAlater				NP	Dry	February	
+CJ14_TCTCGGATAG	CJAC14	TCTCGGATAG	2/10/2015		Callithrix jacchus			Brazil		House		Juvenile	Male		RNAlater				NP	Dry	February	
+CJ15_CTCTGGACGA	CJAC15	CTCTGGACGA	2/22/2015		Callithrix jacchus			Brazil		Algaroba		Unknown	Unknown		RNAlater				Unknown	Dry	February	
+CJ16_CGAGCATTGT	CJAC16	CGAGCATTGT	2/22/2015		Callithrix jacchus			Brazil		Algaroba		Infant	Unknown		RNAlater				NP	Dry	February	
+CJ18_CCAAGAAGAA	CJAC18	CCAAGAAGAA	2/23/2015		Callithrix jacchus			Brazil		House		Unknown	Unknown		RNAlater				Unknown	Dry	February	
+CJ19_TCCTTGTTCT	CJAC19	TCCTTGTTCT	2/25/2015		Callithrix jacchus			Brazil		Coqueiro	Red	Juvenile	Male		RNAlater				NP	Dry	February	
+CJ20_GTAACGATGT	CJAC20	GTAACGATGT	2/27/2015		Callithrix jacchus			Brazil		Algaroba		Adult	Male		RNAlater				NP	Dry	February	
+CJ21_TGGACTCAGA	CJAC21	TGGACTCAGA	3/1/2015		Callithrix jacchus			Brazil		Algaroba		Unknown	Unknown		RNAlater				Unknown	Dry	March	
+CJ22_GGCATCATGC	CJAC22	GGCATCATGC	3/3/2015		Callithrix jacchus			Brazil		House	Lilac/lilac	Adult	Female		RNAlater				ND	Dry	March	
+CJ23_GTATAACGCT	CJAC23	GTATAACGCT	3/13/2015		Callithrix jacchus			Brazil		House		Unknown	Unknown		RNAlater				Unknown	Dry	March	
+CJ24_GCAGATAAGT	CJAC24	GCAGATAAGT	4/25/2015		Callithrix jacchus			Brazil		House	Lilac/lilac	Adult	Female		RNAlater				ND	Dry	April	
+CJ25_GTCGGCTCTA	CJAC25	GTCGGCTCTA	4/25/2015		Callithrix jacchus			Brazil		House	Blue	Adult	Male		RNAlater				NP	Dry	April	
+CJ32_TTCGATAGCA	CJAC32	TTCGATAGCA	7/17/2015		Callithrix jacchus			Brazil		Cow	Blue tufts	Juvenile	Male		RNAlater				NP	Wet	July	
+CJ34_GTCTAGCAGG	CJAC34	GTCTAGCAGG	7/17/2015		Callithrix jacchus			Brazil		Cow		Unknown	Unknown		RNAlater				Unknown	Wet	July	
+CJ35_GGAACACAGG	CJAC35	GGAACACAGG	7/17/2015		Callithrix jacchus			Brazil		Cow	Orange	Adult	Female		RNAlater				Unknown	Wet	July	
+CJ36_TGGTTCGCTG	CJAC36	TGGTTCGCTG	7/17/2015		Callithrix jacchus			Brazil		Cow	Purple	Adult	Male		RNAlater				NP	Wet	July	
+CJ37_CACATTAGCG	CJAC37	CACATTAGCG	7/17/2015		Callithrix jacchus			Brazil		Cow	Yellow	Adult	Male		RNAlater				NP	Wet	July	
+CJ42_GAAGCGCACT	CJAC42	GAAGCGCACT	7/17/2015		Callithrix jacchus			Brazil		Cow		Unknown	Unknown		RNAlater				Unknown	Wet	July	
+CJ43_GCATGCCAGT	CJAC43	GCATGCCAGT	7/17/2015		Callithrix jacchus			Brazil		Cow	White	Adult	Female		RNAlater				Unknown	Wet	July	
+CJ48_GGAGACTGTA	CJAC48	GGAGACTGTA	7/23/2015		Callithrix jacchus			Brazil		House		Adult	Male		Ethanol				NP	Wet	July	
+CJ55_TCGAACTGCA	CJAC55	TCGAACTGCA	7/26/2015		Callithrix jacchus			Brazil		Road	Yellow/green	Adult	Male		RNAlater				NP	Wet	July	
+CJ56_GAGAGGACAT	CJAC56	GAGAGGACAT	7/26/2015		Callithrix jacchus			Brazil		Road		Juvenile	Male		RNAlater				NP	Wet	July	
+CJ63_GAGCACGGAA	CJAC63	GAGCACGGAA	7/30/2015		Callithrix jacchus			Brazil		Key	White	Adult	Male		RNAlater				NP	Wet	July	
+CJ64_GCTCTAACAT	CJAC64	GCTCTAACAT	7/30/2015		Callithrix jacchus			Brazil		Key	Yellow	Adult	Female		RNAlater				Unknown	Wet	July	
+CJ66_TGCTGGCTTG	CJAC66	TGCTGGCTTG	7/30/2015		Callithrix jacchus			Brazil		Key	Green tufts	Juvenile	Male		RNAlater				NP	Wet	July	
+CJ69_TGCATGGAGC	CJAC69	TGCATGGAGC	7/30/2015		Callithrix jacchus			Brazil		Key		Unknown	Unknown		RNAlater				Unknown	Wet	July	
+CJ71_GTACTAAGAG	CJAC71	GTACTAAGAG	7/30/2015		Callithrix jacchus			Brazil		Key	Orange	Adult	Male		RNAlater				NP	Wet	July	
+CJ72_GAAGTCAAGC	CJAC72	GAAGTCAAGC	8/3/2015		Callithrix jacchus			Brazil		Princess		Unknown	Unknown		RNAlater				Unknown	Wet	August	
+CJ74_GCGCATTATG	CJAC74	GCGCATTATG	8/3/2015		Callithrix jacchus			Brazil		Princess	Blue orange	Subadult	Female		RNAlater				NP	Wet	August	
+CJ76_GTCCAGACAT	CJAC76	GTCCAGACAT	8/3/2015		Callithrix jacchus			Brazil		Princess	Red/green	Subadult	Female		RNAlater				NP	Wet	August	
+CJ79_GAGACCTCTA	CJAC79	GAGACCTCTA	8/3/2015		Callithrix jacchus			Brazil		Princess	Yellow/pink	Adult	Female		RNAlater				P	Wet	August	
+CJ83_TTGCACTCAG	CJAC83	TTGCACTCAG	8/5/2015		Callithrix jacchus			Brazil		House	Green/green	Adult	Male		RNAlater				NP	Wet	August	
+CJ84_TGCGGCGATA	CJAC84	TGCGGCGATA	8/5/2015		Callithrix jacchus			Brazil		House	Lilac/lilac	Adult	Female		RNAlater				Unknown	Wet	August	
+CJ85_AGTTGCTAGT	CJAC85	AGTTGCTAGT	8/14/2015		Callithrix jacchus			Brazil		Princess	Blue/white	Adult	Male		RNAlater				NP	Wet	August	
+CJ86_AGGATTGAGG	CJAC86	AGGATTGAGG	9/15/2015		Callithrix jacchus			Brazil		Algaroba	orange/red	Adult	Male		RNAlater				NP	Wet	September	
+CJ87_CCAGAACAGA	CJAC87	CCAGAACAGA	9/21/2015		Callithrix jacchus			Brazil		House	Green/green	Adult	Male		RNAlater				NP	Wet	September	
+CJ94_CGTCAAGCAT	CJAC94	CGTCAAGCAT	3/14/2016		Callithrix jacchus			Brazil		Princess		Adult	Female		Ethanol				Unknown	Dry	March	
+CJ95_TTGTCGAGAC	CJAC95	TTGTCGAGAC	3/14/2016		Callithrix jacchus			Brazil		Princess		Adult	Male		Ethanol				NP	Dry	March	
+CJ101_GACAGGTGAC	CJAC101	GACAGGTGAC	3/15/2016		Callithrix jacchus			Brazil		Coqueiro		Adult	Female		Ethanol				Unknown	Dry	March	
+CJ102_CACGAAGAGC	CJAC102	CACGAAGAGC	3/15/2016		Callithrix jacchus			Brazil		Coqueiro		Juvenile	Female		Ethanol				NP	Dry	March	
+CJ104_CATACCTGAT	CJAC104	CATACCTGAT	3/15/2016		Callithrix jacchus			Brazil		Coqueiro		Adult	Male		Ethanol				NP	Dry	March	
+CJ105_GACGTGCTTC	CJAC105	GACGTGCTTC	3/15/2016		Callithrix jacchus			Brazil		Coqueiro		Adult	Male		Ethanol				NP	Dry	March	
+CJ107_ATTGTGGAGT	CJAC107	ATTGTGGAGT	3/15/2016		Callithrix jacchus			Brazil		Coqueiro		Infant	Female		Ethanol				NP	Dry	March	
+CJ114_TCTGGTCTCA	CJAC114	TCTGGTCTCA	3/17/2016		Callithrix jacchus			Brazil		Princess		Adult	Male		Ethanol				NP	Dry	March	
+CJ115_AGGTAAGAGG	CJAC115	AGGTAAGAGG	3/17/2016		Callithrix jacchus			Brazil		Princess		Adult	Female		Ethanol				Unknown	Dry	March	
+CJ116_TCCTGACAGA	CJAC116	TCCTGACAGA	3/17/2016		Callithrix jacchus			Brazil		Princess		Adult	Female		Ethanol				Unknown	Dry	March	
+CJ117_GCACTGTTGC	CJAC117	GCACTGTTGC	3/17/2016		Callithrix jacchus			Brazil		Princess		Adult	Male		Ethanol				NP	Dry	March	
+CJ118_ACCATGAGTC	CJAC118	ACCATGAGTC	3/17/2016		Callithrix jacchus			Brazil		Princess		Adult	Female		Ethanol				P	Dry	March	
+CJ125_AATGCAGTGT	CJAC125	AATGCAGTGT	3/23/2016		Callithrix jacchus			Brazil		Road	"Red back, Yellow L foot, Pink R foot"	Juvenile	Female		Ethanol				NP	Dry	March	
+CJ126_ATATGGTGGA	CJAC126	ATATGGTGGA	3/24/2016		Callithrix jacchus			Brazil		House		Adult	Male		Ethanol				NP	Dry	March	
+CJ127_ACTCAGTTAC	CJAC127	ACTCAGTTAC	3/24/2016		Callithrix jacchus			Brazil		House	Shaved upper tail	Infant	Male		Ethanol				NP	Dry	March	
+CJ129_AAGTGCGATG	CJAC129	AAGTGCGATG	3/24/2016		Callithrix jacchus			Brazil		House	Shaved upper tail	Infant	Male		Ethanol				NP	Dry	March	
+CJ132_CCACAGAGTG	CJAC132	CCACAGAGTG	3/29/2016		Callithrix jacchus			Brazil		House		Adult	Female		Ethanol				Unknown	Dry	March	
+CJ134_AGTGGTGATC	CJAC134	AGTGGTGATC	3/30/2016		Callithrix jacchus			Brazil		Road		Juvenile	Male		Ethanol				NP	Dry	March	
+CJ135_ACTTCTTAGC	CJAC135	ACTTCTTAGC	3/30/2016		Callithrix jacchus			Brazil		Road		Juvenile	Male		Ethanol				NP	Dry	March	
+CJ12_GCCACATATA	CJAC12	GCCACATATA	2/10/2015		Callithrix jacchus			Brazil		House		Adult	Male		RNAlater				NP	Dry	February	
+CJ138_ACGCAGGAGT	CJAC138	ACGCAGGAGT	6/30/2016		Callithrix jacchus			Brazil		Algaroba	Green butterfly	Adult	Female		Ethanol				L	Wet	June	
+CJ89_AATATGCTGC	CJAC89	AATATGCTGC	9/22/2015		Callithrix jacchus			Brazil		Algaroba	Pink star	Subadult	Female		RNAlater				NP	Wet	September	
+CJ96_AAGCGTAGAA	CJAC96	AAGCGTAGAA	3/14/2016		Callithrix jacchus			Brazil		Princess		Adult	Unknown		Ethanol				Unknown	Dry	March	
