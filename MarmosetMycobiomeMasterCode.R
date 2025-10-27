@@ -845,12 +845,12 @@ RarefiedAlphaDiversityTableOnlyAniPath
 # ANCOM-BC Analysis----
 #ANCOM-BC does not require us to drop low read samples, it accounts for that already
 #I am dropping samples that are missing relevant metadata
-FungTableANCOMBC <- FungTable[,-which(metadata$Sex=="Unknown")]
+FungTableANCOMBC <- FungTableReduced2
 dim(FungTableANCOMBC)
-MetadataANCOMBC <- metadata[-which(metadata$Sex=="Unknown"),]
+MetadataANCOMBC <- MetadataReduced
 dim(MetadataANCOMBC)
 rownames(MetadataANCOMBC) <- MetadataANCOMBC$sampleid
-#FungTableANCOMBC <- FungTableANCOMBC[-which(rowSums(FungTableANCOMBC==0)),]
+FungTableANCOMBC <- FungTableANCOMBC[-which(rowSums(FungTableANCOMBC)==0),]
 
 #Now let's make a phyloseq object, which is needed to run ANCOM-BC
 FungPhylo <- phyloseq(otu_table(FungTableANCOMBC,taxa_are_rows = TRUE),tax_table(as.matrix(TaxTable)),sample_data(MetadataANCOMBC))
@@ -866,7 +866,7 @@ ANCOMSexNames <- c("Fungus 1", "Nothophoma sp.", "Cladosporium 1","Leptosillia s
 ANCOMSexResults <- data.frame(cbind(ANCOMSexResults, ANCOMSexNames))
 
 ANCOMSeasonResults <- data.frame(FungANCOM$res[which(FungANCOM$res$diff_SeasonWet==TRUE),c(1,4,7)])
-ANCOMSeasonNames <- c("Nothophoma sp.", "Cladosporium 1", "Cladosporium 2", "Candida parapsilosis", "Penicillium sumatraense")
+ANCOMSeasonNames <- c("Nothophoma sp.", "Cladosporium 1", "Cladosporium 2", "Candida parapsilosis")
 ANCOMSeasonResults <- data.frame(cbind(ANCOMSeasonResults,ANCOMSeasonNames))
 
 #Preparing the data for the figure
@@ -898,10 +898,10 @@ PlotG
 
 PlotH <- ggplot(ANCOMSeasonResults, aes(y=StyledClass2, x = lfc_SeasonWet)) +
   theme_bw() +
-  geom_point(show.legend = FALSE, size = 4,color = c("#CC79A7","#009E73","#009E73","#009E73","#009E73")) +
+  geom_point(show.legend = FALSE, size = 4,color = c("#CC79A7","#009E73","#009E73","#009E73")) +
   theme( text = element_text(size = 17),axis.text.y = ggtext::element_markdown()) +
-  geom_segment(aes(x=(lfc_SeasonWet + se_SeasonWet),y=StyledClass2,xend=(lfc_SeasonWet - se_SeasonWet),yend=StyledClass2),inherit.aes = FALSE, linewidth=1.2,color = c("#CC79A7","#009E73","#009E73","#009E73","#009E73")) +
-  geom_segment(aes(x=0,xend=0,y=0,yend=5.6)) +
+  geom_segment(aes(x=(lfc_SeasonWet + se_SeasonWet),y=StyledClass2,xend=(lfc_SeasonWet - se_SeasonWet),yend=StyledClass2),inherit.aes = FALSE, linewidth=1.2,color = c("#CC79A7","#009E73","#009E73","#009E73")) +
+  geom_segment(aes(x=0,xend=0,y=0,yend=4.6)) +
   xlab("Logfold Change") +
   xlim(-5.6,4.25) +
   ylab("Taxon")
