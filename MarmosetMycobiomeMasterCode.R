@@ -1,6 +1,6 @@
 # Loading packages----
 #Setting the working directory
-setwd("C:/Users/LabTop01/Box/GombashDocuments/MarmosetData/ITSWork/Qiime2Outputs")
+setwd("/Users/mallott/Dropbox/Projects/caatinga_mycobiome/CjacchusITS")
 #Loading in relevant packages
 library(qiime2R)#We need this to bring in the qza objects
 library(vegan)#For various indices and metrics
@@ -11,11 +11,17 @@ library(car)#for type III ANOVA
 library(ggnewscale)#For plots
 library(ANCOMBC)#For ANCOM-BC
 library(phyloseq)#For ANCOM-BC
+library(mia)#For ANCOM-BC
+library(microbiome)#For ANCOM-BC
 library(ggtext)#For Plots
 library(ggplot2)#For Plots
 library(glue)#For Plots
 library(cowplot)#For Plots
 library(ggordiplots)#For Plots
+library(piecewiseSEM)#For piecwiseSEMs
+library(semEff)#For piecwiseSEMs
+library(semEffects)#For piecwiseSEMs
+library(tidyverse)#For working with data
 
 # Loading files----
 #Let's bring in the objects from Qiime2
@@ -33,7 +39,6 @@ rownames(TaxTable) <- TaxTable$Feature.ID
 #write.table(FungTable,"ASVTable.txt", sep = "\t")
 
 #Now I want to bring in my metadata
-setwd("C:/Users/LabTop01/Box/GombashDocuments/MarmosetData/ITSWork")
 metadata<- read.table("Cjacchus_ITS_metadata.txt",sep="\t",header=TRUE)
 
 # Formatting metadata----
@@ -84,9 +89,9 @@ PielouTable<- matrix(nrow=1000,ncol=60)
 set.seed(50)
 
 for (i in 1:nrow(ShannonTable)){
-  Subsample<-rrarefy(t(FungTableReduced),sample = 5000)
-  ShannonTable[i,]<-diversity(Subsample, index="shannon")
-  SimpsonTable[i,]<-diversity(Subsample, index="simpson")
+  Subsample<-vegan::rrarefy(t(FungTableReduced),sample = 5000)
+  ShannonTable[i,]<-vegan::diversity(Subsample, index="shannon")
+  SimpsonTable[i,]<-vegan::diversity(Subsample, index="simpson")
   ChaoTable[i,]<- apply(Subsample, MARGIN = 1,chao1, taxa.row=FALSE)
   RichnessTable[i,]<- rowSums(ifelse(Subsample>0,1,0))
   PielouTable[i,]<- ShannonTable[i,]/log(RichnessTable[i,])
@@ -792,10 +797,10 @@ PielouTableBothAsPlant<- matrix(nrow=1000,ncol=52)
 set.seed(50)
 
 for (i in 1:nrow(ShannonTableBothAsPlant)){
-  Subsample<-rrarefy(t(FungTableReduced3),sample = 5000)
+  Subsample<-vegan::rrarefy(t(FungTableReduced3),sample = 5000)
   Subsample<-Subsample[,which(FungusKeyReduced[,2]==1)]
-  ShannonTableBothAsPlant[i,]<-diversity(Subsample, index="shannon")
-  SimpsonTableBothAsPlant[i,]<-diversity(Subsample, index="simpson")
+  ShannonTableBothAsPlant[i,]<-vegan::diversity(Subsample, index="shannon")
+  SimpsonTableBothAsPlant[i,]<-vegan::diversity(Subsample, index="simpson")
   ChaoTableBothAsPlant[i,]<- apply(Subsample, MARGIN = 1,chao1, taxa.row=FALSE)
   RichnessTableBothAsPlant[i,]<- rowSums(ifelse(Subsample>0,1,0))
   PielouTableBothAsPlant[i,]<- ShannonTableBothAsPlant[i,]/log(RichnessTableBothAsPlant[i,])
@@ -822,10 +827,10 @@ PielouTableOnlyAniPath<- matrix(nrow=1000,ncol=52)
 set.seed(50)
 
 for (i in 1:nrow(ShannonTableOnlyAniPath)){
-  Subsample<-rrarefy(t(FungTableReduced3),sample = 5000)
+  Subsample<-vegan::rrarefy(t(FungTableReduced3),sample = 5000)
   Subsample<-Subsample[,which(FungusKeyReduced[,2]==0 & FungusKeyReduced[,1]==1)]
-  ShannonTableOnlyAniPath[i,]<-diversity(Subsample, index="shannon")
-  SimpsonTableOnlyAniPath[i,]<-diversity(Subsample, index="simpson")
+  ShannonTableOnlyAniPath[i,]<-vegan::diversity(Subsample, index="shannon")
+  SimpsonTableOnlyAniPath[i,]<-vegan::diversity(Subsample, index="simpson")
   ChaoTableOnlyAniPath[i,]<- apply(Subsample, MARGIN = 1,chao1, taxa.row=FALSE)
   RichnessTableOnlyAniPath[i,]<- rowSums(ifelse(Subsample>0,1,0))
   PielouTableOnlyAniPath[i,]<- ShannonTableOnlyAniPath[i,]/log(RichnessTableOnlyAniPath[i,])
@@ -862,11 +867,11 @@ FungANCOM <- ancombc2(data = tse, fix_formula = "Sex + Season", p_adj_method = "
 FungANCOM$res
 
 ANCOMSexResults <- data.frame(FungANCOM$res[which(FungANCOM$res$diff_SexMale==TRUE),c(1,3,6)])
-ANCOMSexNames <- c("Fungus 1", "Nothophoma sp.", "Cladosporium 1","Leptosillia sp.", "Cladosporium 2", "Fungus 2", "Fungus 3")
+ANCOMSexNames <- c("Fungus 1", "Nothophoma sp.", "Cladosporium 1","Leptosillia sp.", "Cladosporium 2", "Fungus 2", "Fungus 3", "Fungus 4")
 ANCOMSexResults <- data.frame(cbind(ANCOMSexResults, ANCOMSexNames))
 
 ANCOMSeasonResults <- data.frame(FungANCOM$res[which(FungANCOM$res$diff_SeasonWet==TRUE),c(1,4,7)])
-ANCOMSeasonNames <- c("Nothophoma sp.", "Cladosporium 1", "Cladosporium 2", "Candida parapsilosis")
+ANCOMSeasonNames <- c("Nothophoma sp.", "Cladosporium 1", "Cladosporium 2", "Candida parapsilosis", "Penicillium sumatraense")
 ANCOMSeasonResults <- data.frame(cbind(ANCOMSeasonResults,ANCOMSeasonNames))
 
 #Preparing the data for the figure
@@ -1447,3 +1452,364 @@ FungPlantCCREPE_pvalues_NO_NA <- FungPlantCCREPE_pvalues[-which(rowSums(FungPlan
 FungPlantCCREPE_qvalues_NO_NA <- FungPlantCCREPE_qvalues[-which(rowSums(FungPlantCCREPE_qvalues, na.rm=TRUE)==0),-which(colSums(FungPlantCCREPE_qvalues, na.rm=TRUE)==0)]
 FungPlantCCREPE_zstat_NO_NA <- FungPlantCCREPE_zstat[-which(rowSums(FungPlantCCREPE_zstat, na.rm=TRUE)==0),-which(colSums(FungPlantCCREPE_zstat, na.rm=TRUE)==0)]
 FungPlantCCREPE_simscore_NO_NA <- FungPlantCCREPE_simscore[-which(rowSums(FungPlantCCREPE_simscore, na.rm=TRUE)==0),-which(colSums(FungPlantCCREPE_simscore, na.rm=TRUE)==0)]
+
+# SEMs for alpha diversity----
+PlotObject2 = rownames_to_column(PlotObject, var = "sampleid")
+alpha_psem = inner_join(ModelData, PlotObject2, by = "sampleid") |> 
+  mutate(Season_binary = case_when(Season == "Dry" ~ 0, 
+                                   Season == "Wet" ~ 1)) |> 
+  mutate(Age_numeric = case_when(Age == "Unknown" ~ 0,
+                                 Age == "Infant" ~ 1,
+                                 Age == "Juvenile" ~ 2,
+                                 Age == "Subadult" ~ 3,
+                                 Age == "Adult" ~ 4)) |> 
+  mutate(Sex_numeric = case_when(Sex == "Unknown" ~ 2,
+                                 Sex == "Male" ~ 1,
+                                 Sex == "Female" ~ 0))
+
+write_tsv(alpha_psem, "alpha_psem_datafram.tsv")
+alpha_psem = read_tsv("alpha_psem_datafram.tsv")
+
+###Inverts
+####all
+#tests of directed separation suggest including a direct path from Age and Sex to the diversity of the gut mycobiome is needed
+shannon_invert_psem = psem(lm(ShannonDiversityInverts ~ Season_binary + 
+                                Age_numeric + Sex_numeric, data = alpha_psem), 
+     lm(Shannon.y ~ ShannonDiversityInverts + Age_numeric + Sex_numeric, data = alpha_psem))
+summary(shannon_invert_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+richness_invert_psem = psem(lm(RichnessInverts ~ Season_binary + 
+                                Age_numeric + Sex_numeric, data = alpha_psem), 
+                           lm(Richness.y ~ RichnessInverts + Age_numeric + 
+                                Sex_numeric, data = alpha_psem))
+summary(richness_invert_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(richness_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+richness_invert_psem_boot = bootEff(richness_invert_psem, R = 100, seed = 1018, parallel = "no")
+richness_invert_psem_effects = semEff::semEff(richness_invert_psem_boot)
+summary(richness_invert_psem_effects)
+
+chao1_invert_psem = psem(lm(Chao1DiversityInverts ~ Season_binary + Age_numeric + 
+                              Sex_numeric, data = alpha_psem), 
+                            lm(Chao1.y ~ Chao1DiversityInverts + Age_numeric + 
+                                 Sex_numeric, data = alpha_psem))
+summary(chao1_invert_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(chao1_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+chao1_invert_psem_boot = bootEff(chao1_invert_psem, R = 100, seed = 1018, parallel = "no")
+chao1_invert_psem_effects = semEff::semEff(chao1_invert_psem_boot)
+summary(chao1_invert_psem_effects)
+
+pielou_invert_psem = psem(lm(PielouInverts ~ Season_binary + Age_numeric + 
+                               Sex_numeric, data = alpha_psem), 
+                            lm(Pielou.y ~ PielouInverts + Age_numeric + 
+                                 Sex_numeric, data = alpha_psem))
+summary(pielou_invert_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(pielou_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+pielou_invert_psem_boot = bootEff(pielou_invert_psem, R = 100, seed = 1018, parallel = "no")
+pielou_invert_psem_effects = semEff::semEff(pielou_invert_psem_boot)
+summary(pielou_invert_psem_effects)
+
+####resident
+shannon_invert_resident_psem = psem(lm(ShannonDiversityInverts ~ Season_binary + Age_numeric + 
+                                         Sex_numeric, data = alpha_psem), 
+                           lm(Shannon.1 ~ ShannonDiversityInverts + Age_numeric + 
+                                Sex_numeric, data = alpha_psem))
+summary(shannon_invert_resident_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_resident_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_resident_psem_boot = bootEff(shannon_invert_resident_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_resident_psem_effects = semEff::semEff(shannon_invert_resident_psem_boot)
+summary(shannon_invert_resident_psem_effects)
+
+richness_invert_resident_psem = psem(lm(RichnessInverts ~ Season_binary + Age_numeric + 
+                                          Sex_numeric, data = alpha_psem), 
+                            lm(Richness.1 ~ RichnessInverts + Age_numeric + 
+                                 Sex_numeric, data = alpha_psem))
+summary(richness_invert_resident_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(richness_invert_resident_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+richness_invert_resident_psem_boot = bootEff(richness_invert_resident_psem, R = 100, seed = 1018, parallel = "no")
+richness_invert_resident_psem_effects = semEff::semEff(richness_invert_resident_psem_boot)
+summary(richness_invert_resident_psem_effects)
+
+chao1_invert_resident_psem = psem(lm(Chao1DiversityInverts ~ Season_binary + Age_numeric + 
+                                       Sex_numeric, data = alpha_psem), 
+                         lm(Chao1.1 ~ Chao1DiversityInverts + Age_numeric + 
+                              Sex_numeric, data = alpha_psem))
+summary(chao1_invert_resident_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(chao1_invert_resident_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+chao1_invert_resident_psem_boot = bootEff(chao1_invert_resident_psem, R = 100, seed = 1018, parallel = "no")
+chao1_invert_resident_psem_effects = semEff::semEff(chao1_invert_resident_psem_boot)
+summary(chao1_invert_resident_psem_effects)
+
+pielou_invert_resident_psem = psem(lm(PielouInverts ~ Season_binary + Age_numeric + 
+                                        Sex_numeric, data = alpha_psem), 
+                          lm(Pielou.1 ~ PielouInverts + Age_numeric + 
+                               Sex_numeric, data = alpha_psem))
+summary(pielou_invert_resident_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(pielou_invert_resident_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+pielou_invert_resident_psem_boot = bootEff(pielou_invert_resident_psem, R = 100, seed = 1018, parallel = "no")
+pielou_invert_resident_psem_effects = semEff::semEff(pielou_invert_resident_psem_boot)
+summary(pielou_invert_resident_psem_effects)
+
+####transient
+shannon_invert_transient_psem = psem(lm(ShannonDiversityInverts ~ Season_binary + Age_numeric + 
+                                          Sex_numeric, data = alpha_psem), 
+                           lm(Shannon.2 ~ ShannonDiversityInverts + Age_numeric + 
+                                Sex_numeric, data = alpha_psem))
+summary(shannon_invert_transient_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_transient_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_transient_psem_boot = bootEff(shannon_invert_transient_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_transient_psem_effects = semEff::semEff(shannon_invert_transient_psem_boot)
+summary(shannon_invert_transient_psem_effects)
+
+richness_invert_transient_psem = psem(lm(RichnessInverts ~ Season_binary + Age_numeric + 
+                                           Sex_numeric, data = alpha_psem), 
+                            lm(Richness.2 ~ RichnessInverts + Age_numeric + 
+                                 Sex_numeric, data = alpha_psem))
+summary(richness_invert_transient_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(richness_invert_transient_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+richness_invert_transient_psem_boot = bootEff(richness_invert_transient_psem, R = 100, seed = 1018, parallel = "no")
+richness_invert_transient_psem_effects = semEff::semEff(richness_invert_transient_psem_boot)
+summary(richness_invert_transient_psem_effects)
+
+chao1_invert_transient_psem = psem(lm(Chao1DiversityInverts ~ Season_binary + Age_numeric + 
+                                        Sex_numeric, data = alpha_psem), 
+                         lm(Chao1.2 ~ Chao1DiversityInverts + Age_numeric + 
+                              Sex_numeric, data = alpha_psem))
+summary(chao1_invert_transient_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(chao1_invert_transient_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+chao1_invert_transient_psem_boot = bootEff(chao1_invert_transient_psem, R = 100, seed = 1018, parallel = "no")
+chao1_invert_transient_psem_effects = semEff::semEff(chao1_invert_transient_psem_boot)
+summary(chao1_invert_transient_psem_effects)
+
+pielou_invert_transient_psem = psem(lm(PielouInverts ~ Season_binary + Age_numeric + 
+                                         Sex_numeric, data = alpha_psem), 
+                          lm(Pielou.2 ~ PielouInverts + Age_numeric + 
+                               Sex_numeric, data = alpha_psem))
+summary(pielou_invert_transient_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(pielou_invert_transient_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+pielou_invert_transient_psem_boot = bootEff(pielou_invert_transient_psem, R = 100, seed = 1018, parallel = "no")
+pielou_invert_transient_psem_effects = semEff::semEff(pielou_invert_transient_psem_boot)
+summary(pielou_invert_transient_psem_effects)
+
+###Plants
+#All
+shannon_plant_psem = psem(lm(ShannonDiversityPlants ~ Season_binary + Age_numeric + 
+                               Sex_numeric, data = alpha_psem), 
+                           lm(Shannon.y ~ ShannonDiversityPlants + Age_numeric + 
+                                Sex_numeric, data = alpha_psem))
+summary(shannon_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_plant_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_plant_psem_boot = bootEff(shannon_plant_psem, R = 100, seed = 1018, parallel = "no")
+shannon_plant_psem_effects = semEff::semEff(shannon_plant_psem_boot)
+summary(shannon_plant_psem_effects)
+
+richness_plant_psem = psem(lm(RichnessPlants ~ Season_binary + Age_numeric + 
+                                Sex_numeric, data = alpha_psem), 
+                            lm(Richness.y ~ RichnessPlants + Age_numeric + 
+                                 Sex_numeric, data = alpha_psem))
+summary(richness_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+chao1_plant_psem = psem(lm(Chao1DiversityPlants ~ Season_binary + Age_numeric + 
+                             Sex_numeric, data = alpha_psem), 
+                         lm(Chao1.y ~ Chao1DiversityPlants + Age_numeric + 
+                              Sex_numeric, data = alpha_psem))
+summary(chao1_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+pielou_plant_psem = psem(lm(PielouPlants ~ Season_binary + Age_numeric + 
+                              Sex_numeric, data = alpha_psem), 
+                          lm(Pielou.y ~ PielouPlants + Age_numeric + 
+                               Sex_numeric, data = alpha_psem))
+summary(pielou_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+#Resident
+shannon_plant_psem = psem(lm(ShannonDiversityPlants ~ Season_binary + Age_numeric + 
+                               Sex_numeric, data = alpha_psem), 
+                          lm(Shannon.y ~ ShannonDiversityPlants + Age_numeric + 
+                               Sex_numeric, data = alpha_psem))
+summary(shannon_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+richness_plant_psem = psem(lm(RichnessPlants ~ Season_binary + Age_numeric + 
+                                Sex_numeric, data = alpha_psem), 
+                           lm(Richness.y ~ RichnessPlants + Age_numeric + 
+                                Sex_numeric, data = alpha_psem))
+summary(richness_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+chao1_plant_psem = psem(lm(Chao1DiversityPlants ~ Season_binary + Age_numeric + 
+                             Sex_numeric, data = alpha_psem), 
+                        lm(Chao1.y ~ Chao1DiversityPlants + Age_numeric + 
+                             Sex_numeric, data = alpha_psem))
+summary(chao1_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+pielou_plant_psem = psem(lm(PielouPlants ~ Season_binary + Age_numeric + 
+                              Sex_numeric, data = alpha_psem), 
+                         lm(Pielou.y ~ PielouPlants + Age_numeric + 
+                              Sex_numeric, data = alpha_psem))
+summary(pielou_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+#Transient
+shannon_plant_psem = psem(lm(ShannonDiversityPlants ~ Season_binary + Age_numeric + 
+                               Sex_numeric, data = alpha_psem), 
+                          lm(Shannon.y ~ ShannonDiversityPlants + Age_numeric + 
+                               Sex_numeric, data = alpha_psem))
+summary(shannon_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+richness_plant_psem = psem(lm(RichnessPlants ~ Season_binary + Age_numeric + 
+                                Sex_numeric, data = alpha_psem), 
+                           lm(Richness.y ~ RichnessPlants + Age_numeric + 
+                                Sex_numeric, data = alpha_psem))
+summary(richness_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+chao1_plant_psem = psem(lm(Chao1DiversityPlants ~ Season_binary + Age_numeric + 
+                             Sex_numeric, data = alpha_psem), 
+                        lm(Chao1.y ~ Chao1DiversityPlants + Age_numeric + 
+                             Sex_numeric, data = alpha_psem))
+summary(chao1_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
+
+pielou_plant_psem = psem(lm(PielouPlants ~ Season_binary + Age_numeric + 
+                              Sex_numeric, data = alpha_psem), 
+                         lm(Pielou.y ~ PielouPlants + Age_numeric + 
+                              Sex_numeric, data = alpha_psem))
+summary(pielou_plant_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(shannon_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, parallel = "no")
+shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
+summary(shannon_invert_psem_effects)
