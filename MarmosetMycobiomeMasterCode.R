@@ -1903,3 +1903,92 @@ beta_psem = full_join(ModelData, BrayMycoAll_NMDS1_points, by = "sampleid") |>
   mutate(Sex_numeric = case_when(Sex == "Unknown" ~ 2,
                                  Sex == "Male" ~ 1,
                                  Sex == "Female" ~ 0))
+
+###Inverts
+####all
+bray_invert_psem = psem(lm(InvertAllMDS1 ~ Season_binary + 
+                             Age_numeric + Sex_numeric, data = beta_psem), 
+                        lm(MycoAllMDS1 ~ InvertAllMDS1 + 
+                             Age_numeric + Sex_numeric, data = beta_psem))
+summary(bray_invert_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_invert_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+bray_invert_psem_boot = bootEff(bray_invert_psem, R = 100, seed = 1018, parallel = "no")
+bray_invert_psem_effects = semEff::semEff(bray_invert_psem_boot)
+summary(bray_invert_psem_effects)
+
+bray_invert2_psem = psem(lm(InvertAllMDS2 ~ Season_binary + 
+                             Age_numeric + Sex_numeric, data = beta_psem), 
+                        lm(MycoAllMDS2 ~ InvertAllMDS2 + 
+                             Age_numeric + Sex_numeric, data = beta_psem))
+summary(bray_invert2_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_invert2_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+bray_invert2_psem_boot = bootEff(bray_invert2_psem, R = 100, seed = 1018, parallel = "no")
+bray_invert2_psem_effects = semEff::semEff(bray_invert2_psem_boot)
+summary(bray_invert2_psem_effects)
+
+####resident
+bray_invert_resident_psem = psem(lm(InvertResMDS1 ~ Season_binary + 
+                             Age_numeric + Sex_numeric, data = beta_psem), 
+                        lm(MycoResMDS1 ~ InvertResMDS1 + 
+                             Age_numeric + Sex_numeric, data = beta_psem))
+summary(bray_invert_resident_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_invert_resident_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+bray_invert_resident_psem_boot = bootEff(bray_invert_resident_psem, R = 100, seed = 1018, parallel = "no")
+bray_invert_resident_psem_effects = semEff::semEff(bray_invert_resident_psem_boot)
+summary(bray_invert_resident_psem_effects)
+
+bray_invert_resident2_psem = psem(lm(InvertResMDS2 ~ Season_binary + 
+                             Age_numeric + Sex_numeric, data = beta_psem), 
+                        lm(MycoResMDS2 ~ InvertResMDS2 + 
+                             Age_numeric + Sex_numeric, data = beta_psem))
+summary(bray_invert_resident2_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_invert_resident2_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+bray_invert_resident2_psem_boot = bootEff(bray_invert_resident2_psem, R = 100, seed = 1018, parallel = "no")
+bray_invert_resident2_psem_effects = semEff::semEff(bray_invert_resident2_psem_boot)
+summary(bray_invert_resident2_psem_effects)
+
+####transient
+bray_invert_transient_psem = psem(lm(InvertTraMDS1 ~ Season_binary + 
+                             Age_numeric + Sex_numeric, data = beta_psem), 
+                        lm(MycoTraMDS1 ~ InvertTraMDS1 + 
+                             Age_numeric + Sex_numeric, data = beta_psem))
+summary(bray_invert_transient_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_invert_transient_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+bray_invert_transient_psem_boot = bootEff(bray_invert_transient_psem, R = 100, seed = 1018, parallel = "no")
+bray_invert_transient_psem_effects = semEff::semEff(bray_invert_transient_psem_boot)
+summary(bray_invert_transient_psem_effects)
+
+bray_invert_transient2_psem = psem(lm(InvertTraMDS2 ~ Season_binary + 
+                             Age_numeric + Sex_numeric, data = beta_psem), 
+                        lm(MycoTraMDS2 ~ InvertTraMDS2 + 
+                             Age_numeric + Sex_numeric, data = beta_psem))
+summary(bray_invert_transient2_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_invert_transient2_psem),
+                         node_attrs = data.frame(shape = "rectangle", 
+                                                 color = "black", 
+                                                 fillcolor = "grey"),
+                         layout = "tree")
+bray_invert_transient2_psem_boot = bootEff(bray_invert_transient2_psem, R = 100, seed = 1018, parallel = "no")
+bray_invert_transient2_psem_effects = semEff::semEff(bray_invert_transient2_psem_boot)
+summary(bray_invert_transient2_psem_effects)
+
