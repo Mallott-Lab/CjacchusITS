@@ -2023,60 +2023,60 @@ bray_plant2_psem_effects = semEff::semEff(bray_plant2_psem_boot)
 summary(bray_plant2_psem_effects)
 
 ####resident
-bray_Plant_resident_psem = psem(lm(PlantResMDS1 ~ Season_binary + 
+bray_plant_resident_psem = psem(lm(PlantResMDS1 ~ Season_binary + 
                                       Age_numeric + Sex_numeric, data = beta_psem), 
                                  lm(MycoResMDS1 ~ PlantResMDS1 + 
                                       Age_numeric + Sex_numeric, data = beta_psem))
-summary(bray_Plant_resident_psem)
-piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_Plant_resident_psem),
+summary(bray_plant_resident_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_plant_resident_psem),
                          node_attrs = data.frame(shape = "rectangle", 
                                                  color = "black", 
                                                  fillcolor = "grey"),
                          layout = "tree")
-bray_Plant_resident_psem_boot = bootEff(bray_Plant_resident_psem, R = 100, seed = 1018, parallel = "no")
-bray_Plant_resident_psem_effects = semEff::semEff(bray_Plant_resident_psem_boot)
-summary(bray_Plant_resident_psem_effects)
+bray_plant_resident_psem_boot = bootEff(bray_plant_resident_psem, R = 100, seed = 1018, parallel = "no")
+bray_plant_resident_psem_effects = semEff::semEff(bray_plant_resident_psem_boot)
+summary(bray_plant_resident_psem_effects)
 
-bray_Plant_resident2_psem = psem(lm(PlantResMDS2 ~ Season_binary + 
+bray_plant_resident2_psem = psem(lm(PlantResMDS2 ~ Season_binary + 
                                        Age_numeric + Sex_numeric, data = beta_psem), 
                                   lm(MycoResMDS2 ~ PlantResMDS2 + 
                                        Age_numeric + Sex_numeric, data = beta_psem))
-summary(bray_Plant_resident2_psem)
-piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_Plant_resident2_psem),
+summary(bray_plant_resident2_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_plant_resident2_psem),
                          node_attrs = data.frame(shape = "rectangle", 
                                                  color = "black", 
                                                  fillcolor = "grey"),
                          layout = "tree")
-bray_Plant_resident2_psem_boot = bootEff(bray_Plant_resident2_psem, R = 100, seed = 1018, parallel = "no")
-bray_Plant_resident2_psem_effects = semEff::semEff(bray_Plant_resident2_psem_boot)
-summary(bray_Plant_resident2_psem_effects)
+bray_plant_resident2_psem_boot = bootEff(bray_plant_resident2_psem, R = 100, seed = 1018, parallel = "no")
+bray_plant_resident2_psem_effects = semEff::semEff(bray_plant_resident2_psem_boot)
+summary(bray_plant_resident2_psem_effects)
 
 ####transient
-bray_Plant_transient_psem = psem(lm(InertTraMDS1 ~ Season_binary + 
+bray_plant_transient_psem = psem(lm(PlantTraMDS1 ~ Season_binary + 
                                        Age_numeric + Sex_numeric, data = beta_psem), 
-                                  lm(MycoTraMDS1 ~ InertTraMDS1 + 
+                                  lm(MycoTraMDS1 ~ PlantTraMDS1 + 
                                        Age_numeric + Sex_numeric, data = beta_psem))
-summary(bray_Plant_transient_psem)
-piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_Plant_transient_psem),
+summary(bray_plant_transient_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_plant_transient_psem),
                          node_attrs = data.frame(shape = "rectangle", 
                                                  color = "black", 
                                                  fillcolor = "grey"),
                          layout = "tree")
-bray_Plant_transient_psem_boot = bootEff(bray_Plant_transient_psem, R = 100, seed = 1018, parallel = "no")
-bray_Plant_transient_psem_effects = semEff::semEff(bray_Plant_transient_psem_boot)
-summary(bray_Plant_transient_psem_effects)
+bray_plant_transient_psem_boot = bootEff(bray_plant_transient_psem, R = 100, seed = 1018, parallel = "no")
+bray_plant_transient_psem_effects = semEff::semEff(bray_plant_transient_psem_boot)
+summary(bray_plant_transient_psem_effects)
 
-bray_Plant_transient2_psem = psem(lm(PlantTraMDS2 ~ Season_binary + 
+bray_plant_transient2_psem = psem(lm(PlantTraMDS2 ~ Season_binary + 
                                         Age_numeric + Sex_numeric, data = beta_psem), 
                                    lm(MycoTraMDS2 ~ PlantTraMDS2 + 
                                         Age_numeric + Sex_numeric, data = beta_psem))
-summary(bray_Plant_transient2_psem)
-piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_Plant_transient2_psem),
+summary(bray_plant_transient2_psem)
+piecewiseSEM:::plot.psem(piecewiseSEM::as.psem(bray_plant_transient2_psem),
                          node_attrs = data.frame(shape = "rectangle", 
                                                  color = "black", 
                                                  fillcolor = "grey"),
                          layout = "tree")
-bray_Plant_transient2_psem_boot = bootEff(bray_Plant_transient2_psem, R = 100, seed = 1018, parallel = "no")
-bray_Plant_transient2_psem_effects = semEff::semEff(bray_Plant_transient2_psem_boot)
-summary(bray_Plant_transient2_psem_effects)
+bray_plant_transient2_psem_boot = bootEff(bray_plant_transient2_psem, R = 100, seed = 1018, parallel = "no")
+bray_plant_transient2_psem_effects = semEff::semEff(bray_plant_transient2_psem_boot)
+summary(bray_plant_transient2_psem_effects)
 
