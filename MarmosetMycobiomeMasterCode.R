@@ -847,6 +847,70 @@ RarefiedAlphaDiversityTableOnlyAniPath[4,] <- colMeans(SimpsonTableOnlyAniPath)
 RarefiedAlphaDiversityTableOnlyAniPath[5,] <- colMeans(PielouTableOnlyAniPath)
 RarefiedAlphaDiversityTableOnlyAniPath
 
+# Calculating within sample diversity metrics of specific groups of fungi 2----
+#I want to calculate within sample diversity metrics associated with resident and transient Fungi
+#There are ASVs that have ecological roles that could make them resident and transient fungi
+#I am going to treat fungi that could be considered both as resident fungi to test the robustness of my results
+
+ShannonTableOnlyPlant<- matrix(nrow=1000,ncol=52)
+RichnessTableOnlyPlant<- matrix(nrow=1000,ncol=52)
+ChaoTableOnlyPlant<- matrix(nrow=1000,ncol=52)
+SimpsonTableOnlyPlant<- matrix(nrow=1000,ncol=52)
+PielouTableOnlyPlant <- matrix(nrow=1000,ncol=52)
+
+set.seed(50)
+
+for (i in 1:nrow(ShannonTableOnlyPlant)){
+  Subsample<-vegan::rrarefy(t(FungTableReduced3),sample = 5000)
+  Subsample<-Subsample[,which(FungusKeyReduced[,2]==1 & FungusKeyReduced[,1]==0)]
+  ShannonTableOnlyPlant[i,]<-vegan::diversity(Subsample, index="shannon")
+  SimpsonTableOnlyPlant[i,]<-vegan::diversity(Subsample, index="simpson")
+  ChaoTableOnlyPlant[i,]<- apply(Subsample, MARGIN = 1,chao1, taxa.row=FALSE)
+  RichnessTableOnlyPlant[i,]<- rowSums(ifelse(Subsample>0,1,0))
+  PielouTableOnlyPlant[i,]<- ShannonTableOnlyPlant[i,]/log(RichnessTableOnlyPlant[i,])
+}
+
+RarefiedAlphaDiversityTableOnlyPlant <- matrix(nrow = 5, ncol = 52)
+rownames(RarefiedAlphaDiversityTableOnlyPlant) <- c("Shannon", "Richness", "Chao1", "Simpson", "Pielou")
+colnames(RarefiedAlphaDiversityTableOnlyPlant) <- colnames(FungTableReduced2)
+RarefiedAlphaDiversityTableOnlyPlant[1,] <- colMeans(ShannonTableOnlyPlant)
+RarefiedAlphaDiversityTableOnlyPlant[2,] <- colMeans(RichnessTableOnlyPlant)
+RarefiedAlphaDiversityTableOnlyPlant[3,] <- colMeans(ChaoTableOnlyPlant)
+RarefiedAlphaDiversityTableOnlyPlant[4,] <- colMeans(SimpsonTableOnlyPlant)
+RarefiedAlphaDiversityTableOnlyPlant[5,] <- colMeans(PielouTableOnlyPlant)
+RarefiedAlphaDiversityTableOnlyPlant
+
+#Now I want to only count the ones that are potentially resident even if also identified as plant-associated
+
+ShannonTableBothAsAniPath<- matrix(nrow=1000,ncol=52)
+RichnessTableBothAsAniPath<- matrix(nrow=1000,ncol=52)
+ChaoTableBothAsAniPath<- matrix(nrow=1000,ncol=52)
+SimpsonTableBothAsAniPath<- matrix(nrow=1000,ncol=52)
+PielouTableBothAsAniPath<- matrix(nrow=1000,ncol=52)
+
+set.seed(50)
+
+for (i in 1:nrow(ShannonTableBothAsAniPath)){
+  Subsample<-vegan::rrarefy(t(FungTableReduced3),sample = 5000)
+  Subsample<-Subsample[,which(FungusKeyReduced[,1]==1)]
+  ShannonTableBothAsAniPath[i,]<-vegan::diversity(Subsample, index="shannon")
+  SimpsonTableBothAsAniPath[i,]<-vegan::diversity(Subsample, index="simpson")
+  ChaoTableBothAsAniPath[i,]<- apply(Subsample, MARGIN = 1,chao1, taxa.row=FALSE)
+  RichnessTableBothAsAniPath[i,]<- rowSums(ifelse(Subsample>0,1,0))
+  PielouTableBothAsAniPath[i,]<- ShannonTableBothAsAniPath[i,]/log(RichnessTableBothAsAniPath[i,])
+}
+
+
+RarefiedAlphaDiversityTableBothAsAniPath <- matrix(nrow = 5, ncol = 52)
+rownames(RarefiedAlphaDiversityTableBothAsAniPath) <- c("Shannon", "Richness", "Chao1", "Simpson", "Pielou")
+colnames(RarefiedAlphaDiversityTableBothAsAniPath) <- colnames(FungTableReduced2)
+RarefiedAlphaDiversityTableBothAsAniPath[1,] <- colMeans(ShannonTableBothAsAniPath)
+RarefiedAlphaDiversityTableBothAsAniPath[2,] <- colMeans(RichnessTableBothAsAniPath)
+RarefiedAlphaDiversityTableBothAsAniPath[3,] <- colMeans(ChaoTableBothAsAniPath)
+RarefiedAlphaDiversityTableBothAsAniPath[4,] <- colMeans(SimpsonTableBothAsAniPath)
+RarefiedAlphaDiversityTableBothAsAniPath[5,] <- colMeans(PielouTableBothAsAniPath)
+RarefiedAlphaDiversityTableBothAsAniPath
+
 # ANCOM-BC Analysis----
 #ANCOM-BC does not require us to drop low read samples, it accounts for that already
 #I am dropping samples that are missing relevant metadata
@@ -935,7 +999,9 @@ PlotObject<-data.frame(t(rbind(
   PielouPlants,
   PielouInverts,
   Chao1DiversityInverts,
-  Chao1DiversityPlants)))
+  Chao1DiversityPlants,
+  RarefiedAlphaDiversityTableOnlyPlant,
+  RarefiedAlphaDiversityTableBothAsAniPath)))
 
 #Running correlation tests between the overall mycobiome and the two diet components
 MycoRichVsInsectRich <- cor.test(x = PlotObject[,2], y = PlotObject[,21], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
@@ -999,6 +1065,37 @@ ResidentPielouVsInsectPielou
 ResidentPielouVsPlantPielou <- cor.test(x = PlotObject[,10], y = PlotObject[,22], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
 ResidentPielouVsPlantPielou
 
+#Now for the broad definition resident taxa (anything identified as animal)
+ResidentBroadRichVsInsectRich <- cor.test(x = PlotObject[,32], y = PlotObject[,21], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadRichVsInsectRich
+
+ResidentBroadRichVsPlantRich <- cor.test(x = PlotObject[,32], y = PlotObject[,20], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadRichVsPlantRich
+
+ResidentBroadShannonVsInsectShannon <- cor.test(x = PlotObject[,31], y = PlotObject[,18], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadShannonVsInsectShannon
+
+ResidentBroadShannonVsPlantShannon <- cor.test(x = PlotObject[,31], y = PlotObject[,19], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadShannonVsPlantShannon
+
+ResidentBroadChaoVsInsectChao <- cor.test(x = PlotObject[,33], y = PlotObject[,24], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadChaoVsInsectChao
+
+ResidentBroadChaoVsPlantChao <- cor.test(x = PlotObject[,33], y = PlotObject[,25], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadChaoVsPlantChao
+
+ResidentBroadSimpsonVsInsectSimpson <- cor.test(x = PlotObject[,34], y = PlotObject[,16], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadSimpsonVsInsectSimpson
+
+ResidentBroadSimpsonVsPlantSimpson <- cor.test(x = PlotObject[,34], y = PlotObject[,17], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadSimpsonVsPlantSimpson
+
+ResidentBroadPielouVsInsectPielou <- cor.test(x = PlotObject[,35], y = PlotObject[,23], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadPielouVsInsectPielou
+
+ResidentBroadPielouVsPlantPielou <- cor.test(x = PlotObject[,35], y = PlotObject[,22], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+ResidentBroadPielouVsPlantPielou
+
 #Now for the Likely Transient fungi
 TransientRichVsInsectRich <- cor.test(x = PlotObject[,12], y = PlotObject[,21], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
 TransientRichVsInsectRich
@@ -1029,6 +1126,37 @@ TransientPielouVsInsectPielou
 
 TransientPielouVsPlantPielou <- cor.test(x = PlotObject[,15], y = PlotObject[,22], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
 TransientPielouVsPlantPielou
+
+#Now for the narrow definition Transient fungi (plants only)
+TransientNarrowRichVsInsectRich <- cor.test(x = PlotObject[,27], y = PlotObject[,21], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowRichVsInsectRich
+
+TransientNarrowRichVsPlantRich <- cor.test(x = PlotObject[,27], y = PlotObject[,20], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowRichVsPlantRich
+
+TransientNarrowShannonVsInsectShannon <- cor.test(x = PlotObject[,26], y = PlotObject[,18], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowShannonVsInsectShannon
+
+TransientNarrowShannonVsPlantShannon <- cor.test(x = PlotObject[,26], y = PlotObject[,19], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowShannonVsPlantShannon
+
+TransientNarrowChaoVsInsectChao <- cor.test(x = PlotObject[,28], y = PlotObject[,24], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowChaoVsInsectChao
+
+TransientNarrowChaoVsPlantChao <- cor.test(x = PlotObject[,28], y = PlotObject[,25], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowChaoVsPlantChao
+
+TransientNarrowSimpsonVsInsectSimpson <- cor.test(x = PlotObject[,29], y = PlotObject[,16], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowSimpsonVsInsectSimpson
+
+TransientNarrowSimpsonVsPlantSimpson <- cor.test(x = PlotObject[,29], y = PlotObject[,17], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowSimpsonVsPlantSimpson
+
+TransientNarrowPielouVsInsectPielou <- cor.test(x = PlotObject[,30], y = PlotObject[,23], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowPielouVsInsectPielou
+
+TransientNarrowPielouVsPlantPielou <- cor.test(x = PlotObject[,30], y = PlotObject[,22], alternative = c("two.sided"), method = "spearman", exact = FALSE,data=PlotObject)
+TransientNarrowPielouVsPlantPielou
 
 #Now I want to make plots of these correlations
 
@@ -1117,6 +1245,21 @@ ModelDataTransient$Time2 <-as.factor(ModelDataTransient$Time2)
 ModelDataTransient$Reproductive[which(ModelDataTransient$Reproductive=="Unknown")]<-NA
 ModelDataTransient$Age[which(ModelDataTransient$Age=="Unknown")]<-NA
 
+#Now I need to see what predicts Plant Associated Alpha Diversity when I count the ASVs that are only plant associated as plant associated
+ModelDataNarrowTransient <- data.frame(cbind(MetadataReduced,t(RarefiedAlphaDiversityTableOnlyPlant)))
+#I want to make sure the factors are coded as factors
+ModelDataNarrowTransient$Sex <-as.factor(ModelDataNarrowTransient$Sex)
+ModelDataNarrowTransient$Group <-as.factor(ModelDataNarrowTransient$Group)
+ModelDataNarrowTransient$Season <-as.factor(ModelDataNarrowTransient$Season)
+ModelDataNarrowTransient$Reproductive <-as.factor(ModelDataNarrowTransient$Reproductive)
+ModelDataNarrowTransient$Individual <-as.factor(ModelDataNarrowTransient$Individual)
+ModelDataNarrowTransient$Preservative <-as.factor(ModelDataNarrowTransient$Preservative)
+ModelDataNarrowTransient$Age <-as.factor(ModelDataNarrowTransient$Age)
+ModelDataNarrowTransient$Time2 <-as.factor(ModelDataNarrowTransient$Time2)
+#Now I want to put in NAs when appropriate
+ModelDataNarrowTransient$Reproductive[which(ModelDataNarrowTransient$Reproductive=="Unknown")]<-NA
+ModelDataNarrowTransient$Age[which(ModelDataNarrowTransient$Age=="Unknown")]<-NA
+
 #Shannon
 ShannonModelFullTransient <- lm(Shannon ~ 
                          Season +
@@ -1126,6 +1269,15 @@ ShannonModelFullTransient <- lm(Shannon ~
                          Age,
                        data = ModelDataTransient)
 summary(ShannonModelFullTransient)
+
+ShannonModelNarrowTransient <- lm(Shannon ~ 
+                                  Season +
+                                  Sex +
+                                  Group +
+                                  Preservative +
+                                  Age,
+                                data = ModelDataNarrowTransient)
+summary(ShannonModelNarrowTransient)
 
 #Richness
 RichnessModelFullTransient <- lmer(Richness ~ 
