@@ -1497,6 +1497,21 @@ ModelDataResident$Time2 <-as.factor(ModelDataResident$Time2)
 ModelDataResident$Reproductive[which(ModelDataResident$Reproductive=="Unknown")]<-NA
 ModelDataResident$Age[which(ModelDataResident$Age=="Unknown")]<-NA
 
+# Fixed and Mixed Effects Linear Regressions Testing Correlations between sex/season and resident fungi----
+#Now I need to run models for the resident fungi when I count both animal-associated only and animal- and plant-associated---
+ModelDataBroadResident <- data.frame(cbind(MetadataReduced,t(RarefiedAlphaDiversityTableBothAsAniPath)))
+#I want to make sure the factors are coded as factors
+ModelDataBroadResident$Sex <-as.factor(ModelDataBroadResident$Sex)
+ModelDataBroadResident$Group <-as.factor(ModelDataBroadResident$Group)
+ModelDataBroadResident$Season <-as.factor(ModelDataBroadResident$Season)
+ModelDataBroadResident$Reproductive <-as.factor(ModelDataBroadResident$Reproductive)
+ModelDataBroadResident$Individual <-as.factor(ModelDataBroadResident$Individual)
+ModelDataBroadResident$Preservative <-as.factor(ModelDataBroadResident$Preservative)
+ModelDataBroadResident$Age <-as.factor(ModelDataBroadResident$Age)
+ModelDataBroadResident$Time2 <-as.factor(ModelDataBroadResident$Time2)
+#Now I want to put in NAs when appropriate
+ModelDataBroadResident$Reproductive[which(ModelDataBroadResident$Reproductive=="Unknown")]<-NA
+ModelDataBroadResident$Age[which(ModelDataBroadResident$Age=="Unknown")]<-NA
 
 ShannonModelFullResident <- lm(Shannon ~ 
                          Season +
@@ -1508,6 +1523,15 @@ ShannonModelFullResident <- lm(Shannon ~
 summary(ShannonModelFullResident)
 #The model itself is not significant (p-value = 0.4309)
 #Sex is the only significant parameter, with male being different from female
+
+ShannonModelBroadFullResident <- lm(Shannon ~ 
+                                 Season +
+                                 Sex +
+                                 Group +
+                                 Preservative +
+                                 Age,
+                               data = ModelDataBroadResident)
+summary(ShannonModelBroadFullResident)
 
 PlotAResident <- ggplot(ModelData, aes(x = Sex, y = Shannon, color = Sex)) +
   scale_color_manual(values=c("#56B4E9","#E69F00")) +
@@ -1531,7 +1555,14 @@ summary(RichnessModelFullResident)
 #The model itself is not significant (p-value = 0.882)
 #No parameter is significant
 
-
+RichnessModelBroadFullResident <- lm(Richness ~ 
+                                  Season +
+                                  Sex +
+                                  Group +
+                                  Preservative +
+                                  Age,
+                                data = ModelDataBroadResident)
+summary(RichnessModelBroadFullResident)
 
 Chao1ModelFullResident <- lm(Chao1 ~ 
                        Season +
@@ -1544,6 +1575,15 @@ summary(Chao1ModelFullResident)
 #The model itself is not significant (p-value = 0.886)
 #No parameter is significant
 
+Chao1ModelBroadFullResident <- lm(Chao1 ~ 
+                               Season +
+                               Sex +
+                               Group +
+                               Preservative +
+                               Age,
+                             data = ModelDataBroadResident)
+summary(Chao1ModelBroadFullResident)
+
 SimpsonModelFullResident <- lm(Simpson ~ 
                          Season +
                          Sex +
@@ -1554,6 +1594,15 @@ SimpsonModelFullResident <- lm(Simpson ~
 summary(SimpsonModelFullResident)
 #The model itself is not significant (p-value = 0.6564)
 #No parameter is significant
+
+SimpsonModelBroadFullResident <- lm(Simpson ~ 
+                                 Season +
+                                 Sex +
+                                 Group +
+                                 Preservative +
+                                 Age,
+                               data = ModelDataBroadResident)
+summary(SimpsonModelBroadFullResident)
 
 #Note that some samples have a Pielou of NaN, and those were removed
 PielouModelFullResident <- lm(Pielou ~ 
@@ -1567,6 +1616,14 @@ summary(PielouModelFullResident)
 #The model itself is not significant (p-value = 0.5152)
 #The Road and F group groups are different from Abocarpa or whatever it is called
 
+PielouModelBroadFullResident <- lm(Pielou ~ 
+                                Season +
+                                Sex +
+                                Group +
+                                Preservative +
+                                Age,
+                              data = ModelDataBroadResident[-which(ModelDataBroadResident$Pielou=="NaN"),])
+summary(PielouModelBroadFullResident)
 
 # Mantel tests----
 #Let's make a subsamle of 60 samples for the Mantel tests
@@ -1590,11 +1647,17 @@ dim(APSubsample)
 #Now a transient fungi subsample
 PASubsample <- SubsampleMantel[,which(FungusKeyReduced2[,2]==1)]
 dim(PASubsample)
+#Now a resident fungi subsample that includes both animal-associated and animal-associate+plant-associated
+APBroadSubsample <- SubsampleMantel[,which(FungusKeyReduced2[,1]==1)]
+dim(APBroadSubsample)
+#Now a transient fungi subsample that includes plant-only associated taxa
+PANarrowSubsample <- SubsampleMantel[,which(FungusKeyReduced2[,2]==1 & FungusKeyReduced2[,1]==0)]
+dim(PANarrowSubsample)
 
 #We are loading this package here because a dependent package interfers with ANCOM-BC
 library(ecodist)
 #Does the overall mycobiome vary with the invertebrate portion of the diet?
-ecodist::mantel(formula=(vegdist((SubsampleMantel), method="bray", binary=FALSE)) ~(vegdist(t(Inverts60), method="bray", binary=FALSE)), nperm=100000)
+ecodist::mantel(formula=(vegan::vegdist((SubsampleMantel), method="bray", binary=FALSE)) ~(vegan::vegdist(t(Inverts60), method="bray", binary=FALSE)), nperm=100000)
 
 #Does the overall mycobiome vary with the plant portion of the diet?
 ecodist::mantel(formula=(vegdist((SubsampleMantel), method="bray", binary=FALSE)) ~(vegdist(t(Plant60), method="bray", binary=FALSE)), nperm=100000)
@@ -1605,22 +1668,36 @@ PASubSample2 <- PASubsample[-which(rowSums(PASubsample)==0),]
 Inverts60PAReduced <- Inverts60[,-which(rowSums(PASubsample)==0)]
 Plant60PAReduced <- Plant60[,-which(rowSums(PASubsample)==0)]
 
+PANarrowSubsample2 = PANarrowSubsample[-which(rowSums(PANarrowSubsample)==0),]
+Inverts60PANarrowReduced <- Inverts60[,-which(rowSums(PANarrowSubsample)==0)]
+Plant60PANarrowReduced <- Plant60[,-which(rowSums(PANarrowSubsample)==0)]
+
 #Does the transient mycobiome vary with the invertebrate portion of the diet?
 ecodist::mantel(formula=(vegdist((PASubSample2), method="bray", binary=FALSE)) ~(vegdist(t(Inverts60PAReduced), method="bray", binary=FALSE)), nperm=100000)
+ecodist::mantel(formula=(vegdist((PANarrowSubsample2), method="bray", binary=FALSE)) ~(vegdist(t(Inverts60PANarrowReduced), method="bray", binary=FALSE)), nperm=100000)
 
 #Does the transient mycobiome vary with the plant portion of the diet?
 ecodist::mantel(formula=(vegdist((PASubSample2), method="bray", binary=FALSE)) ~(vegdist(t(Plant60PAReduced), method="bray", binary=FALSE)), nperm=100000)
+ecodist::mantel(formula=(vegdist((PANarrowSubsample2), method="bray", binary=FALSE)) ~(vegdist(t(Plant60PANarrowReduced), method="bray", binary=FALSE)), nperm=100000)
+
 
 #Let's drop samples that lack resident fungi
 APSubsample2 <- APSubsample[-which(rowSums(APSubsample)==0),]
 Inverts60APReduced <- Inverts60[,-which(rowSums(APSubsample)==0)]
 Plant60APReduced <- Plant60[,-which(rowSums(APSubsample)==0)]
 
+APBroadSubsample2 <- APBroadSubsample[-which(rowSums(APBroadSubsample)==0),]
+Inverts60APBroadReduced <- Inverts60[,-which(rowSums(APBroadSubsample)==0)]
+Plant60APBroadReduced <- Plant60[,-which(rowSums(APBroadSubsample)==0)]
+
 #Does the resident mycobiome vary with the invertebrate portion of the diet?
 ecodist::mantel(formula=(vegdist((APSubsample2), method="bray", binary=FALSE)) ~(vegdist(t(Inverts60APReduced), method="bray", binary=FALSE)), nperm=100000)
+ecodist::mantel(formula=(vegdist((APBroadSubsample2), method="bray", binary=FALSE)) ~(vegdist(t(Inverts60APBroadReduced), method="bray", binary=FALSE)), nperm=100000)
+
 
 #Does the resident mycobiome vary with the plant portion of the diet?
 ecodist::mantel(formula=(vegdist((APSubsample2), method="bray", binary=FALSE)) ~(vegdist(t(Plant60APReduced), method="bray", binary=FALSE)), nperm=100000)
+ecodist::mantel(formula=(vegdist((APBroadSubsample2), method="bray", binary=FALSE)) ~(vegdist(t(Plant60APBroadReduced), method="bray", binary=FALSE)), nperm=100000)
 
 # CCREPE Analysis----
 #I am running CCREPE
