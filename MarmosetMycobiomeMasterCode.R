@@ -1312,6 +1312,40 @@ summary(RichnessModelNullSexTransient)
 anova(RichnessModelNullSeasonTransient, RichnessModelFullTransient, test="Chisq")
 anova(RichnessModelNullSexTransient, RichnessModelFullTransient, test="Chisq")
 #Sex is significant, season is not
+
+RichnessModelNarrowFullTransient <- lmer(Richness ~ 
+                                     Season +
+                                     Sex +
+                                     (1|Group) +
+                                     Preservative +
+                                     Age +
+                                     Season:Time2,
+                                   data = ModelDataNarrowTransient, REML=FALSE)
+summary(RichnessModelNarrowFullTransient)
+
+RichnessModelNarrowNullSeasonTransient <- lmer(Richness ~ 
+                                           #Season +
+                                           Sex +
+                                           (1|Group) +
+                                           Preservative +
+                                           Age +
+                                           Season:Time2,
+                                         data = ModelDataNarrowTransient, REML=FALSE)
+summary(RichnessModelNarrowNullSeasonTransient)
+RichnessModelNarrowNullSexTransient <- lmer(Richness ~ 
+                                        Season +
+                                        #Sex +
+                                        (1|Group) +
+                                        Preservative +
+                                        Age +
+                                        Season:Time2,
+                                      data = ModelDataNarrowTransient, REML=FALSE)
+summary(RichnessModelNarrowNullSexTransient)
+#Now for significance tests
+anova(RichnessModelNarrowNullSeasonTransient, RichnessModelNarrowFullTransient, test="Chisq")
+anova(RichnessModelNarrowNullSexTransient, RichnessModelNarrowFullTransient, test="Chisq")
+#Sex is significant, season is not
+
 PlotATransient <- ggplot(ModelData, aes(x = Sex, y = Richness, color = Sex)) +
   scale_color_manual(values=c("#56B4E9","#E69F00")) +
   theme_bw() +
@@ -1360,6 +1394,44 @@ anova(Chao1ModelNullSexTransient, Chao1ModelFullTransient, test="Chisq")
 Anova(Chao1ModelFullTransient)
 
 #Sex is significant, season is not
+
+#Chao1
+Chao1ModelNarrowFullTransient <- lmer(Chao1 ~ 
+                                  Season +
+                                  Sex +
+                                  (1|Group) +
+                                  Preservative +
+                                  Age +
+                                  Season:Time2,
+                                data = ModelDataNarrowTransient, REML=FALSE)
+summary(Chao1ModelNarrowFullTransient)
+
+Chao1ModelNarrowNullSeasonTransient <- lmer(Chao1 ~ 
+                                        #Season +
+                                        Sex +
+                                        (1|Group) +
+                                        Preservative +
+                                        Age +
+                                        Season:Time2,
+                                      data = ModelDataNarrowTransient, REML=FALSE)
+summary(Chao1ModelNarrowNullSeasonTransient)
+Chao1ModelNarrowNullSexTransient <- lmer(Chao1 ~ 
+                                     Season +
+                                     #Sex +
+                                     (1|Group) +
+                                     Preservative +
+                                     Age +
+                                     Season:Time2,
+                                   data = ModelDataNarrowTransient, REML=FALSE)
+summary(Chao1ModelNarrowNullSexTransient)
+#Now for significance tests
+anova(Chao1ModelNarrowNullSeasonTransient, Chao1ModelNarrowFullTransient, test="Chisq")
+anova(Chao1ModelNarrowNullSexTransient, Chao1ModelNarrowFullTransient, test="Chisq")
+#A Wald's test to see if the sexes significantly differ
+Anova(Chao1ModelNarrowFullTransient)
+
+#Sex is significant, season is not
+
 PlotX <- ggplot(ModelData, aes(x = Sex, y = Chao1, color = Sex)) +
   scale_color_manual(values=c("#56B4E9","#E69F00")) +
   theme_bw() +
@@ -1380,6 +1452,15 @@ SimpsonModelFullTransient <- lm(Simpson ~
                        data = ModelDataTransient)
 summary(SimpsonModelFullTransient)
 
+SimpsonModelNarrowFullTransient <- lm(Simpson ~ 
+                                  Season +
+                                  Sex +
+                                  Group +
+                                  Preservative +
+                                  Age,
+                                data = ModelDataNarrowTransient)
+summary(SimpsonModelNarrowFullTransient)
+
 #Pielou
 #Note, some samples had 0 Simpson and have NaN for Pielou, those samples were removed
 PielouModelFullTransient <- lm(Pielou ~ 
@@ -1390,6 +1471,15 @@ PielouModelFullTransient <- lm(Pielou ~
                         Age,
                       data = ModelDataTransient[-which(ModelDataTransient$Pielou=="NaN"),])
 summary(PielouModelFullTransient)
+
+PielouModelNarrowFullTransient <- lm(Pielou ~ 
+                                 Season +
+                                 Sex +
+                                 Group +
+                                 Preservative +
+                                 Age,
+                               data = ModelDataNarrowTransient[-which(ModelDataNarrowTransient$Pielou=="NaN"),])
+summary(PielouModelNarrowFullTransient)
 
 # Fixed and Mixed Effects Linear Regressions Testing Correlations between sex/season and resident fungi----
 #Now I need to run models for the resident fungi
