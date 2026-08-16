@@ -15,6 +15,7 @@ library(mia)#For ANCOM-BC
 library(microbiome)#For ANCOM-BC
 library(ggtext)#For Plots
 library(ggplot2)#For Plots
+library(ggpubr)#For Plots
 library(glue)#For Plots
 library(cowplot)#For Plots
 library(ggordiplots)#For Plots
@@ -168,36 +169,35 @@ anova(ShannonModelNullSex, ShannonModelFull, test="Chisq")
 #Sex is significant, season is not
 
 #Here are box and whiskers plots showing these results
-PlotA <- ggplot(ModelData, aes(x = Season, y = Shannon, color = Season)) +
-  scale_color_manual(values=c("#CC79A7","#009E73")) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  ylab("Shannon diversity")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot(show.legend = FALSE) +
-  annotate("text",x=0.5,y=3.9,label="italic(p) - value == 0.173", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=0.5,y=3.6,label= expression( chi ^"2"~ "= 1.858"), hjust =0, size=6) +
-  annotate("text",x=0.5,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  theme(aspect.ratio = 1) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
+PlotA = ggboxplot(ModelData, x = "Season", y = "Shannon", color = "Season",
+              add = "jitter", 
+              palette = c("#CC79A7","#009E73"),
+              add.params = list(fill = "white")) 
+PlotA = ggpar(PlotA, xlab = "Climatic Period", xlegend.title = "Period", 
+          legend = "right", ylab = "Shannon Diversity Index") +
+  rremove("xlab") +
+  annotate(geom = "text", 
+           label = expression("p=0.173,"~chi^"2"~"=1.858"), 
+           x = -Inf, y = -Inf, size = 4,
+           hjust = -0.1, vjust = -0.5)
 PlotA
 
-PlotA2 <- ggplot(ModelData, aes(x = Sex, y = Shannon, color = Sex)) +
-  scale_color_manual(values=c("#56B4E9","#E69F00")) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  ylab("Shannon diversity")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot(show.legend = FALSE) +
-  annotate("text",x=0.5,y=3.9,label="italic(p) - value < 0.001", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=0.5,y=3.6,label= expression( chi ^"2"~ "= 12.077"), hjust =0, size=6) +
-  annotate("text",x=0.5,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE) +
-  geom_segment(aes(x=1,y=4,xend=2,yend=4),inherit.aes = FALSE) +
-  theme(aspect.ratio = 1) +
-  annotate("text",x=1.5,y=4.1,label="***", size = 10)
+PlotA2 = ggboxplot(ModelData, x = "Sex", y = "Shannon", color = "Sex",
+                  add = "jitter", 
+                  palette = c("#56B4E9","#E69F00"),
+                  add.params = list(fill = "white")) 
+PlotA2 = ggpar(PlotA2, xlab = "Sex", xlegend.title = "Sex", 
+              legend = "right", ylab = "Shannon Diversity Index") +
+  rremove("xlab") +
+  annotate(geom = "text", 
+           label = expression("p<0.001,"~chi^"2"~"=12.077"), 
+           x = -Inf, y = -Inf, size = 4,
+           hjust = -0.1, vjust = -0.5)+ 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Female", "Male")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.05, 0.1, 1),
+                                        symbols = c("***", "*", "ns")))
 PlotA2
 
 #Same procedure for overall mycobiome Richness
@@ -235,74 +235,36 @@ anova(RichnessModelNullSeason, RichnessModelFull, test="Chisq")
 anova(RichnessModelNullSex, RichnessModelFull, test="Chisq")
 #Sex is significant, season is not
 
-PlotB <- ggplot(ModelData, aes(x = Season, y = Richness, color = Season)) +
-  scale_color_manual(values=c("#CC79A7","#009E73")) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  ylab("ASV Richness")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot() +
-  theme(legend.position="bottom") +
-  annotate("text",x=0.05,y=150,label="italic(p) - value == 0.292", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=0.05,y=135,label= expression( chi ^"2"~ "= 1.108"), hjust =0, size=6) +
-  annotate("text",x=0,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  theme(aspect.ratio = 1) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
+PlotB = ggboxplot(ModelData, x = "Season", y = "Richness", color = "Season",
+                  add = "jitter", 
+                  palette = c("#CC79A7","#009E73"),
+                  add.params = list(fill = "white")) 
+PlotB = ggpar(PlotB, xlab = "Climatic Period", xlegend.title = "Period", 
+              legend = "bottom", ylab = "ASV Richness") +
+  rremove("xlab") +
+  annotate(geom = "text", 
+           label = expression("p=0.292,"~chi^"2"~"=1.108"), 
+           x = -Inf, y = -Inf, size = 4,
+           hjust = -0.1, vjust = -0.1)
 PlotB
 
-#This creates a legend that will be used later when generating Figure 1
-PlotBLegend <- ggplot(ModelData, aes(x = Season, y = Richness, color = Season)) +
-  scale_color_manual(values=c("#CC79A7","#009E73")) +
-  theme_bw() +
-  theme(text = element_text(size = 20)) +
-  ylab("ASV Richness")+
-  labs(color = "Climatic Period") +
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot() +
-  theme(legend.position="bottom") +
-  annotate("text",x=0.05,y=150,label="italic(p) - value == 0.292", parse=TRUE, hjust =0, size=5) +
-  annotate("text",x=0.05,y=140,label= expression( chi ^"2"~ "= 1.1075"), hjust =0, size=5) +
-  annotate("text",x=0,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
-PlotBLegend
-
-
-PlotB2 <- ggplot(ModelData, aes(x = Sex, y = Richness, color = Sex)) +
-  scale_color_manual(values=c("#56B4E9","#E69F00")) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  ylab("ASV Richness")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot() +
-  theme(legend.position = "bottom") +
-  geom_segment(aes(x=1,y=145,xend=2,yend=145),inherit.aes = FALSE) +
-  annotate("text",x=1.5,y=150,label="**", size = 10) +
-  annotate("text",x=0.05,y=170,label="italic(p) - value == 0.009", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=0.05,y=158,label=expression( chi ^"2" ~ "= 6.828"), hjust =0, size=6) +
-  annotate("text",x=0,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  theme(aspect.ratio = 1) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
+PlotB2 = ggboxplot(ModelData, x = "Sex", y = "Richness", color = "Sex",
+                             add = "jitter", 
+                             palette = c("#56B4E9","#E69F00"),
+                             add.params = list(fill = "white")) 
+PlotB2 = ggpar(PlotB2, xlab = "Sex", xlegend.title = "Sex", 
+               legend = "bottom", ylab = "ASV Richness") +
+  rremove("xlab") +
+  annotate(geom = "text", 
+           label = expression("p=0.009,"~chi^"2"~"=6.8275"), 
+           x = -Inf, y = -Inf, size = 4,
+           hjust = -0.1, vjust = -0.1)+ 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Female", "Male")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.05, 0.1, 1),
+                                        symbols = c("**", "*", "ns")))
 PlotB2
-
-PlotB2Legend <- ggplot(ModelData, aes(x = Sex, y = Richness, color = Sex)) +
-  scale_color_manual(values=c("#56B4E9","#E69F00")) +
-  theme_bw() +
-  theme(text = element_text(size = 30)) +
-  ylab("ASV Richness")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot() +
-  theme(legend.position = "bottom") +
-  geom_segment(aes(x=1,y=145,xend=2,yend=145),inherit.aes = FALSE) +
-  annotate("text",x=1.5,y=150,label="**", size = 10) +
-  annotate("text",x=0.05,y=160,label="italic(p) - value == 0.009", parse=TRUE, hjust =0, size=5) +
-  annotate("text",x=0.05,y=152,label=expression( chi ^"2" ~ "= 6.8275"), hjust =0, size=5) +
-  annotate("text",x=0,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
-PlotB2Legend
 
 #Same procedure for Chao1
 Chao1ModelFull <- lmer(Chao1 ~ 
@@ -390,40 +352,41 @@ summary(SimpsonModelFull)
 #Subadult is significantly different from adult (p = 0.03398)
 
 #Plots of the Simpson diversity index
-PlotC <- ggplot(ModelData, aes(x = Season, y = Simpson, color = Season)) +
-  scale_color_manual(values=c("#CC79A7","#009E73")) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  ylab("Simpson diversity")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot(show.legend = FALSE) +
-  geom_segment(aes(x=1,y=1,xend=2,yend=1),inherit.aes = FALSE) +
-  annotate("text",x=1.5,y=1.03,label="*", size = 10) +
-  annotate("text",x=0.05,y=1.25,label="italic(p) - value == 0.039", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=0.05,y=1.17,label="italic(t) - value == -2.144", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=0,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  theme(aspect.ratio = 1) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
+PlotC = ggboxplot(ModelData, x = "Season", y = "Simpson", color = "Season",
+                  add = "jitter", 
+                  palette = c("#CC79A7","#009E73"),
+                  add.params = list(fill = "white")) 
+PlotC = ggpar(PlotC, xlab = "Climatic Period", xlegend.title = "Period", 
+              legend = "bottom", ylab = "Simpson Diversity") +
+  rremove("xlab") +
+  annotate(geom = "text", 
+           label = expression("p=0.039, t=-2.144"), 
+           x = -Inf, y = -Inf, size = 4,
+           hjust = -0.1, vjust = -0.5) + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Dry", "Wet")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.05, 0.9, 1),
+                                        symbols = c("***", "*", "ns")))
 PlotC
 
-PlotC2 <- ggplot(ModelData, aes(x = Sex, y = Simpson, color = Sex)) +
-  scale_color_manual(values=c("#56B4E9","#E69F00")) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  ylab("Simpson diversity")+
-  theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank()) +
-  geom_boxplot(show.legend = FALSE) +
-  geom_segment(aes(x=1,y=1,xend=2,yend=1),inherit.aes = FALSE) +
-  annotate("text",x=1.5,y=1.03,label="**", size = 10) +
-  annotate("text",x=0.05,y=1.25,label="italic(p) - value == 0.008", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=0.05,y=1.17,label="italic(t) - value == 2.814", parse=TRUE,hjust =0, size=6) +
-  annotate("text",x=0,y=1.05,label="", parse=TRUE, hjust =0, size = 10) +
-  theme(aspect.ratio = 1) +
-  geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
+PlotC2 = ggboxplot(ModelData, x = "Sex", y = "Simpson", color = "Sex",
+                   add = "jitter", 
+                   palette = c("#56B4E9","#E69F00"),
+                   add.params = list(fill = "white")) 
+PlotC2 = ggpar(PlotC2, xlab = "Sex", xlegend.title = "Sex", 
+               legend = "bottom", ylab = "Simpson Diversity") +
+  rremove("xlab") +
+  annotate(geom = "text", 
+           label = expression("p=0.008, t=2.814"), 
+           x = -Inf, y = -Inf, size = 4,
+           hjust = -0.1, vjust = -0.5) + 
+  stat_compare_means(label = "p.signif", 
+                     comparisons = list(c("Female", "Male")),
+                     symnum.args = list(cutpoints = 
+                                          c(0, 0.05, 0.1, 1),
+                                        symbols = c("***", "*", "ns")))
 PlotC2
-
 
 #Now for Pielou's evenness, which also uses a fixed effects approach
 PielouModelFull <- lm(Pielou ~ 
@@ -468,7 +431,7 @@ PlotD2 <- ggplot(ModelData, aes(x = Sex, y = Pielou, color = Sex)) +
   geom_jitter(shape = 16, position = position_jitter(0.2), show.legend=FALSE)
 PlotD2
 
-#I am creating legends for Figure 1
+#I am creating legends for Figure 2
 legendSeason <- ggdraw(cowplot::get_plot_component(PlotBLegend, 'guide-box-bottom', return_all = TRUE))
 legendSex <- ggdraw(cowplot::get_plot_component(PlotB2Legend, 'guide-box-bottom', return_all = TRUE))
 
@@ -533,7 +496,7 @@ BrayPERMANOVA
 #Season, preservative, and group are significant in the PERMANOVA
 
 #Let's run NMDS
-BrayNMDS<-metaMDS(BrayDist, k = 2,autotransform=FALSE,try=100,trymax=100)
+BrayNMDS<-metaMDS(BrayDist, k = 2,autotransform=FALSE,try=100,trymax=4999)
 
 #I want to look at the beta dispersion of samples by seasons
 SeasonBrayBetaDisper <- betadisper(d=BrayDist,group=MetadataReduced2$Season)
@@ -553,20 +516,31 @@ PlotEBase <- gg_ordiplot(ord=BrayNMDS$points, groups = MetadataReduced2$Season, 
 
 #This plot is more flexible and interfaces with cowplot better than the gg_ordiplot
 PlotE <- ggplot(data = PlotEBase$df_ord, aes(x = x, y = y, color = Group)) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
   scale_color_manual(values=c("#CC79A7","#009E73")) +
-  annotate("text",x=-1,y=2.47,label="italic(p) - value == 0.048", parse=TRUE, hjust =0 , size=6) +
-  annotate("text",x=-1,y=2.26,label=expression( R ^"2"~ "= 0.028"), hjust =0, size=6) +
-  annotate("text",x=-1,y=1.97,label="Stress = 0.158" , hjust =0, size=6) +
   geom_point(size = 3, show.legend=FALSE) +
   xlab("NMDS1") +
   ylab("NMDS2") +
-  theme(aspect.ratio = 1) +
+  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=rel(2)), 
+        axis.title.y=element_text(size=rel(2)),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.8))) +
+  geom_path(data = PlotEBase$df_ellipse, show.legend=FALSE) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "p=0.048<br>R<sup>2</sup>=0.028<br>Stress = 0.158", 
+           x = Inf, y = Inf, size = 5,
+           hjust = 1, vjust = 1)
+
+
+annotate("text",x=-1,y=2.47,label="italic(p) - value == 0.048", parse=TRUE, hjust =0 , size=6) +
+  annotate("text",x=-1,y=2.26,label=expression( R ^"2"~ "= 0.028"), hjust =0, size=6) +
+  annotate("text",x=-1,y=1.97,label="Stress = 0.158" , hjust =0, size=6) +
+
   xlim(c(-1.07,2.5)) +
   ylim(c(-1.07, 2.5)) +
-  geom_path(data = PlotEBase$df_ellipse, show.legend=FALSE)
-PlotE
+  PlotE
 
 PlotE2Base <- gg_ordiplot(ord=BrayNMDS$points, groups = MetadataReduced2$Sex, kind = "sd", ellipse = TRUE)
 
@@ -636,6 +610,20 @@ plot_grid(PlotB2 + theme(legend.position="none"),
           rel_heights = c(1,1,1,.3),
           rel_widths = c(1,1),
           labels = c("A","B","C","D","E","F"), align = "hv")
+
+col1 = plot_grid(PlotB + theme(legend.position = "none"),
+                 PlotB2 + theme(legend.position = "none"),
+                 nrow = 2, ncol = 1, labels = c('A','B'), 
+                 label_size = 20)
+row3 = plot_grid(legend1, legend2, nrow = 1, ncol = 2)
+
+row3
+
+fig2 = ggarrange(PlotB, PlotC, PlotB2, PlotC2, nrow = 1, ncol = 4, legend = "none",
+          labels = c('A', 'B', 'C', 'D'), align = "hv")
+pdf("Fig2.pdf", width = 10, height = 4)
+fig2
+dev.off()
 
 # Loading and preparing diet data----
 #Setting the working directory
