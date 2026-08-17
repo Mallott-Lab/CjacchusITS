@@ -236,11 +236,12 @@ anova(RichnessModelNullSex, RichnessModelFull, test="Chisq")
 #Sex is significant, season is not
 
 PlotB = ggboxplot(ModelData, x = "Season", y = "Richness", color = "Season",
-                  add = "jitter", 
+                  add = "jitter", repel,
                   palette = c("#CC79A7","#009E73"),
                   add.params = list(fill = "white")) 
 PlotB = ggpar(PlotB, xlab = "Climatic Period", xlegend.title = "Period", 
-              legend = "bottom", ylab = "ASV Richness") +
+              legend = "bottom", ylab = "ASV Richness",
+              ylim = c(0,150)) +
   rremove("xlab") +
   annotate(geom = "text", 
            label = expression("p=0.292,"~chi^"2"~"=1.108"), 
@@ -249,11 +250,12 @@ PlotB = ggpar(PlotB, xlab = "Climatic Period", xlegend.title = "Period",
 PlotB
 
 PlotB2 = ggboxplot(ModelData, x = "Sex", y = "Richness", color = "Sex",
-                             add = "jitter", 
+                             add = "jitter", repel,
                              palette = c("#56B4E9","#E69F00"),
                              add.params = list(fill = "white")) 
 PlotB2 = ggpar(PlotB2, xlab = "Sex", xlegend.title = "Sex", 
-               legend = "bottom", ylab = "ASV Richness") +
+               legend = "bottom", ylab = "ASV Richness",
+               ylim = c(0,150)) +
   rremove("xlab") +
   annotate(geom = "text", 
            label = expression("p=0.009,"~chi^"2"~"=6.8275"), 
@@ -367,7 +369,7 @@ PlotC = ggpar(PlotC, xlab = "Climatic Period", xlegend.title = "Period",
                      comparisons = list(c("Dry", "Wet")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.05, 0.9, 1),
-                                        symbols = c("***", "*", "ns")))
+                                        symbols = c("**", "*", "ns")))
 PlotC
 
 PlotC2 = ggboxplot(ModelData, x = "Sex", y = "Simpson", color = "Sex",
@@ -385,7 +387,7 @@ PlotC2 = ggpar(PlotC2, xlab = "Sex", xlegend.title = "Sex",
                      comparisons = list(c("Female", "Male")),
                      symnum.args = list(cutpoints = 
                                           c(0, 0.05, 0.1, 1),
-                                        symbols = c("***", "*", "ns")))
+                                        symbols = c("**", "*", "ns")))
 PlotC2
 
 #Now for Pielou's evenness, which also uses a fixed effects approach
@@ -447,6 +449,21 @@ plot_grid(PlotSup1 + theme(legend.position="none"),
           PlotA2,PlotA,legendSex,legendSeason,nrow=3,ncol=2,
           rel_heights = c(1,1,.3),
           labels = c("A","B","C","D"), align = "hv")
+
+# Generating Figure 2----
+#I exported this with a width of 800 pixels an a height of 1320 pixels
+plot_grid(PlotB2 + theme(legend.position="none"),
+          PlotB + theme(legend.position="none"),
+          PlotC2,PlotC,PlotE2,PlotE,legendSex,legendSeason,nrow=4,ncol=2,
+          rel_heights = c(1,1,1,.3),
+          rel_widths = c(1,1),
+          labels = c("A","B","C","D","E","F"), align = "hv")
+
+fig2 = ggarrange(PlotB, PlotC, PlotB2, PlotC2, nrow = 1, ncol = 4, legend = "none",
+                 labels = c('A', 'B', 'C', 'D'), align = "hv")
+pdf("Fig2.pdf", width = 10, height = 4)
+fig2
+dev.off()
 
 # Calculating between sample diversity metrics for the overall mycobiome----
 #I need to remove samples that don't have sex information for beta diversity analyses
@@ -522,42 +539,38 @@ PlotE <- ggplot(data = PlotEBase$df_ord, aes(x = x, y = y, color = Group)) +
   ylab("NMDS2") +
   theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
         legend.key=element_blank()) + 
-  theme(axis.title.x=element_text(size=rel(2)), 
-        axis.title.y=element_text(size=rel(2)),
+  theme(axis.title.x=element_text(size=14), 
+        axis.title.y=element_text(size=14),
         plot.title = element_text(size=rel(3)),
         legend.title = element_text(size=rel(2)),
         legend.text = element_text(size = rel(1.8))) +
   geom_path(data = PlotEBase$df_ellipse, show.legend=FALSE) +
   annotate(geom = "richtext", fill = NA, label.color = NA,
-           label = "p=0.048<br>R<sup>2</sup>=0.028<br>Stress = 0.158", 
+           label = "p = 0.048<br>R<sup>2</sup> = 0.028<br>Stress = 0.158", 
            x = Inf, y = Inf, size = 5,
            hjust = 1, vjust = 1)
+PlotE
 
-
-annotate("text",x=-1,y=2.47,label="italic(p) - value == 0.048", parse=TRUE, hjust =0 , size=6) +
-  annotate("text",x=-1,y=2.26,label=expression( R ^"2"~ "= 0.028"), hjust =0, size=6) +
-  annotate("text",x=-1,y=1.97,label="Stress = 0.158" , hjust =0, size=6) +
-
-  xlim(c(-1.07,2.5)) +
-  ylim(c(-1.07, 2.5)) +
-  PlotE
 
 PlotE2Base <- gg_ordiplot(ord=BrayNMDS$points, groups = MetadataReduced2$Sex, kind = "sd", ellipse = TRUE)
 
 PlotE2 <- ggplot(data = PlotE2Base$df_ord, aes(x = x, y = y, color = Group)) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
   scale_color_manual(values=c("#56B4E9","#E69F00")) +
-  annotate("text",x=-1,y=2.47,label="italic(p) - value == 0.358", parse=TRUE, hjust =0, size=6) +
-  annotate("text",x=-1,y=2.26,label=expression( R ^"2"~ "= 0.020"), hjust =0, size = 6) +
-  annotate("text",x=-1,y=1.97,label="Stress = 0.158" , hjust =0, size = 6) +
   geom_point(size = 3, show.legend=FALSE) +
   xlab("NMDS1") +
   ylab("NMDS2") +
-  theme(aspect.ratio = 1) +
-  xlim(c(-1.07,2.5)) +
-  ylim(c(-1.07, 2.5)) +
-  geom_path(data = PlotE2Base$df_ellipse, show.legend=FALSE)
+  theme(panel.background = element_rect(fill = 'white', colour = 'black'), 
+        legend.key=element_blank()) + 
+  theme(axis.title.x=element_text(size=14), 
+        axis.title.y=element_text(size=14),
+        plot.title = element_text(size=rel(3)),
+        legend.title = element_text(size=rel(2)),
+        legend.text = element_text(size = rel(1.8))) +
+  geom_path(data = PlotE2Base$df_ellipse, show.legend=FALSE) +
+  annotate(geom = "richtext", fill = NA, label.color = NA,
+           label = "p = 0.358<br>R<sup>2</sup> = 0.020<br>Stress = 0.158", 
+           x = Inf, y = Inf, size = 5,
+           hjust = 1, vjust = 1)
 PlotE2
 
 #Let's move on to the Jaccard distance PERMANOVA
@@ -602,28 +615,6 @@ PlotJaccB <- ggplot(data = PlotJaccBBase$df_ord, aes(x = x, y = y, color = Group
   geom_path(data = PlotJaccBBase$df_ellipse, show.legend=FALSE)
 PlotJaccB
 
-# Generating Figure 2----
-#I exported this with a width of 800 pixels an a height of 1320 pixels
-plot_grid(PlotB2 + theme(legend.position="none"),
-          PlotB + theme(legend.position="none"),
-          PlotC2,PlotC,PlotE2,PlotE,legendSex,legendSeason,nrow=4,ncol=2,
-          rel_heights = c(1,1,1,.3),
-          rel_widths = c(1,1),
-          labels = c("A","B","C","D","E","F"), align = "hv")
-
-col1 = plot_grid(PlotB + theme(legend.position = "none"),
-                 PlotB2 + theme(legend.position = "none"),
-                 nrow = 2, ncol = 1, labels = c('A','B'), 
-                 label_size = 20)
-row3 = plot_grid(legend1, legend2, nrow = 1, ncol = 2)
-
-row3
-
-fig2 = ggarrange(PlotB, PlotC, PlotB2, PlotC2, nrow = 1, ncol = 4, legend = "none",
-          labels = c('A', 'B', 'C', 'D'), align = "hv")
-pdf("Fig2.pdf", width = 10, height = 4)
-fig2
-dev.off()
 
 # Loading and preparing diet data----
 #Setting the working directory
@@ -934,44 +925,69 @@ Italics1 <- str_starts(Names1, "Fungus", negate=TRUE)
 StyledClass1 <- ifelse(Italics1==TRUE,glue("<i>{Names1}</i>"), Names1)
 
 ANCOMSexResults <- cbind(StyledClass1, ANCOMSexResults)
+ANCOMSexResults2 = ANCOMSexResults |> dplyr::select(c(2:6)) |>
+  dplyr::mutate(ANCOMSexResults, Sex = dplyr::case_when(lfc_SexMale < 0 ~ "Female", 
+                         lfc_SexMale > 0 ~ "Male"))
 
 Names2 <- ANCOMSeasonResults$ANCOMSeasonNames
 Italics2 <- str_starts(Names2, "Fungus", negate=TRUE)
 StyledClass2 <- ifelse(Italics2==TRUE, glue("<i>{Names2}</i>"), Names2)
 
 ANCOMSeasonResults <- cbind(StyledClass2, ANCOMSeasonResults)
+ANCOMSeasonResults2 = ANCOMSeasonResults |> 
+  dplyr::mutate(ANCOMSeasonResults, Season = dplyr::case_when(lfc_SeasonWet < 0 ~ "Dry", 
+                                                        lfc_SeasonWet > 0 ~ "Wet"))
 
 #ANCOMBC Plots
-PlotG <- ggplot(ANCOMSexResults, aes(y=StyledClass1, x = lfc_SexMale)) +
-  theme_bw() +
-  geom_point(show.legend = FALSE, size = 4,color = c("#56B4E9","#56B4E9","#E69F00","#56B4E9","#E69F00","#56B4E9","#56B4E9")) +
-  theme( text = element_text(size = 17),axis.text.y = ggtext::element_markdown()) +
-  geom_segment(aes(x=(lfc_SexMale + se_SexMale),y=StyledClass1,xend=(lfc_SexMale - se_SexMale),yend=StyledClass1),inherit.aes = FALSE, linewidth=1.2,color = c("#56B4E9","#56B4E9","#E69F00","#56B4E9","#E69F00","#56B4E9","#56B4E9")) +
-  geom_segment(aes(x=0,xend=0,y=0,yend=7.6)) +
-  xlab("Logfold Change") +
-  xlim(-5.6,4.25) +
-  ylab("Taxon")
+
+PlotG = ggdotchart(ANCOMSexResults2, x = "ANCOMSexNames", y = "lfc_SexMale",
+                   color = "Sex", palette = c("#56B4E9", "#E69F00"),
+                   sorting = "ascending", rotate = T, dot.size = 3,
+                   y.text.col = F) + theme_cleveland() +
+  geom_hline(yintercept = 0, color = "gray50") +
+  geom_errorbar(aes(ymin = lfc_SexMale - se_SexMale, 
+                    ymax = lfc_SexMale + se_SexMale, 
+                    color = Sex),
+                    width = 0.2)
+PlotG = ggpar(PlotG, ylab = "Log Fold Change", 
+              font.ytickslab = c("italic"),
+              font.x = c(size = 14),
+              font.legend = c(size = 12),
+              legend = "right") + 
+  font("legend.title", size = 16)
+  rremove("ylab")
 PlotG
 
-PlotH <- ggplot(ANCOMSeasonResults, aes(y=StyledClass2, x = lfc_SeasonWet)) +
-  theme_bw() +
-  geom_point(show.legend = FALSE, size = 4,color = c("#CC79A7","#009E73","#009E73","#009E73")) +
-  theme( text = element_text(size = 17),axis.text.y = ggtext::element_markdown()) +
-  geom_segment(aes(x=(lfc_SeasonWet + se_SeasonWet),y=StyledClass2,xend=(lfc_SeasonWet - se_SeasonWet),yend=StyledClass2),inherit.aes = FALSE, linewidth=1.2,color = c("#CC79A7","#009E73","#009E73","#009E73")) +
-  geom_segment(aes(x=0,xend=0,y=0,yend=4.6)) +
-  xlab("Logfold Change") +
-  xlim(-5.6,4.25) +
-  ylab("Taxon")
+PlotH = ggdotchart(ANCOMSeasonResults2, x = "ANCOMSeasonNames", y = "lfc_SeasonWet",
+                   color = "Season", palette = c("#CC79A7", "#009E73"),
+                   sorting = "ascending", rotate = T, dot.size = 3,
+                   y.text.col = F) + theme_cleveland() +
+  geom_hline(yintercept = 0, color = "gray50") +
+  geom_errorbar(aes(ymin = lfc_SeasonWet - se_SeasonWet, 
+                    ymax = lfc_SeasonWet + se_SeasonWet, 
+                    color = Season),
+                width = 0.2)
+PlotH = ggpar(PlotH, ylab = "Log Fold Change", 
+              font.ytickslab = c("italic"),
+              font.x = c(size = 14),
+              font.legend = c(size = 12),
+              legend = "right") + 
+  font("legend.title", size = 16) +
+  rremove("ylab")
 PlotH
+
 # Generating Figure 3----
 #Export at width 800 pixels and height 800 pixels
-plot_grid(PlotG + theme(legend.position="none"),
-          legendSex,
-          PlotH + theme(legend.position="none"),
-          legendSeason,nrow=4,ncol=1,
-          rel_heights = c(1,.3,1,.3),
-          labels = c("A","","B",""), align = "hv")
 
+col1 = plot_grid(PlotE, PlotE2, nrow = 2, ncol = 1, labels = c("A", "C"),
+                 align = "hv")
+col2 = plot_grid(PlotH, PlotG, nrow=2,ncol=1,
+                 labels = c("B","D"), align = "hv")
+fig3 = plot_grid(col1, col2, nrow = 1, ncol = 2, rel_widths = c(1, 2))
+
+pdf("Fig3.pdf", width = 13, height = 8)
+fig3
+dev.off()
 
 # Correlation analyses between diet and fungi----
 PlotObject<-data.frame(t(rbind(
@@ -1171,39 +1187,57 @@ CorPlot3 <- ggplot(PlotObject, aes(y=Simpson.1, x=SimpsonDiversityInverts)) +
   xlab("Arthropod Simpson Diversity") +
   ylab("Likely Resident Fungi Simpson Div.")
 
-CorPlotA <- ggplot(PlotObject, aes(y=Richness, x=RichnessInverts)) +
-  geom_point(size=3, shape=19) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  geom_smooth(method="lm",col="black") +
-  xlab("") +
-  annotate("text",x=35,y=135,label="italic(p) - value == 0.039", parse=TRUE, hjust =0, size = 6) +
-  annotate("text",x=35,y=125,label= expression( rho ~ "= 0.287" ), hjust =0, size = 6) +
-  ylab("Mycobiome Richness")
 
-CorPlotB <- ggplot(PlotObject, aes(y=Richness.2, x=RichnessInverts)) +
-  geom_point(size=3, shape=19) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  xlab("") +
-  geom_smooth(method="lm",col="black") +
-  annotate("text",x=35,y=29,label="italic(p) - value == 0.035", parse=TRUE, hjust =0, size = 6) +
-  annotate("text",x=35,y=27,label= expression( rho ~ "= 0.293" ), hjust =0, size = 6) +
-  ylab("Transient Fungi Richness")
+CorPlotA = ggscatter(PlotObject, x = "RichnessInverts", y = "Richness",
+                     add = "reg.line",
+                     conf.int = T,
+                     add.params = list(color = "#a296de", fill = "lightgray"))
+CorPlotA = ggpar(CorPlotA, ylab = "Mycobiome Richness", 
+                 xlab = "Arthropod Richness",
+                 font.x = c(size = 14),
+                 font.y = c(size = 14)) +
+  annotate(geom = "text", 
+           label = expression("p = 0.039," ~ rho ~ "= 0.287"), 
+           x = Inf, y = Inf, size = 5,
+           hjust = 1, vjust = 1)
+CorPlotA
 
-CorPlotC <- ggplot(PlotObject, aes(y=Richness.1, x=RichnessInverts)) +
-  geom_point(size=3, shape=19) +
-  theme_bw() +
-  theme(text = element_text(size = 17)) +
-  xlab("Arthropod Richness") +
-  geom_smooth(method="lm",col="black") +
-  annotate("text",x=35,y=5.8,label=expression(italic('p') * " - value" * " = 0.150"), hjust =0, size = 6) +
-  annotate("text",x=35,y=5.4,label= expression( rho ~ "= 0.203" ), hjust =0, size = 6) +
-  ylab("Resident Fungi Richness")
+CorPlotB = ggscatter(PlotObject, x = "RichnessInverts", y = "Richness.2",
+                     add = "reg.line",
+                     conf.int = T,
+                     add.params = list(color = "#a296de", fill = "lightgray"))
+CorPlotB = ggpar(CorPlotB, ylab = "Transient Fungi Richness", 
+                 xlab = "Arthropod Richness",
+                 font.x = c(size = 14),
+                 font.y = c(size = 14)) +
+  annotate(geom = "text", 
+           label = expression("p = 0.035," ~ rho ~ "= 0.293"), 
+           x = Inf, y = Inf, size = 5,
+           hjust = 1, vjust = 1)
+CorPlotB
+
+CorPlotC = ggscatter(PlotObject, x = "RichnessInverts", y = "Richness.1",
+                     add = "reg.line",
+                     conf.int = T,
+                     add.params = list(color = "#a296de", fill = "lightgray"))
+CorPlotC = ggpar(CorPlotC, ylab = "Resident Fungi Richness", 
+                 xlab = "Arthropod Richness",
+                 font.x = c(size = 14),
+                 font.y = c(size = 14)) +
+  annotate(geom = "text", 
+           label = expression("p = 0.150," ~ rho ~ "= 0.203"), 
+           x = Inf, y = Inf, size = 5,
+           hjust = 1, vjust = 1)
+CorPlotC
 
 # Generating Figure 4----
 #I exported this with a width of 400 pixels and a height of 1200 pixels
-plot_grid(CorPlotA, CorPlotB, CorPlotC,nrow=3,ncol=1,labels=c("A","B","C"), rel_widths = c(1), rel_heights = c(1,1,1))
+fig4 = plot_grid(CorPlotA, CorPlotB, CorPlotC,nrow=1,ncol=3,
+          labels=c("A","B","C"))
+
+pdf("Fig4.pdf", width = 10, height = 4)
+fig4
+dev.off()
 
 CorPlotDTalk <- ggplot(PlotObject, aes(y=Simpson.1, x=SimpsonDiversityInverts)) +
   geom_point(size=2, shape=19) +
