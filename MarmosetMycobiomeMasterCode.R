@@ -1827,6 +1827,7 @@ shannon_invert_psem_boot = bootEff(shannon_invert_psem, R = 100, seed = 1018, pa
 shannon_invert_psem_effects = semEff::semEff(shannon_invert_psem_boot)
 summary(shannon_invert_psem_effects)
 
+
 richness_invert_psem = psem(lm(RichnessInverts ~ Season_binary + 
                                 Age_numeric + Sex_numeric, data = alpha_psem), 
                            lm(Richness.y ~ RichnessInverts + Age_numeric + 
